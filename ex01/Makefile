@@ -6,7 +6,7 @@
 #    By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/06 00:15:05 by tsofien-          #+#    #+#              #
-#    Updated: 2025/05/21 23:55:15 by tsofien-         ###   ########.fr        #
+#    Updated: 2025/05/22 00:24:45 by tsofien-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ DFLAGS	= -MMD -MF $(@:.o=.d)
 ################################################################################
 
 FILE_EXTENSION	= .cpp
-SRCS			= utils.cpp Span.cpp
+SRCS			= utils.cpp Rpn.cpp
 OBJS_DIR		= .objs/
 SRCS_PATH		= src
 INCLUDE_PATH	= includes/
