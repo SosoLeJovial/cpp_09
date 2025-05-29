@@ -6,7 +6,7 @@
 #    By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/06 00:15:05 by tsofien-          #+#    #+#              #
-#    Updated: 2025/05/22 00:54:10 by tsofien-         ###   ########.fr        #
+#    Updated: 2025/05/30 00:04:52 by tsofien-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ DFLAGS	= -MMD -MF $(@:.o=.d)
 ################################################################################
 
 FILE_EXTENSION	= .cpp
-SRCS			= utils.cpp
+SRCS			= utils.cpp Btc.cpp
 OBJS_DIR		= .objs/
 SRCS_PATH		= src
 INCLUDE_PATH	= includes/
