@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 09:58:51 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/05/29 00:14:13 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/05/29 14:12:42 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int main(int ac, char **av)
 	std::ifstream file(filename.c_str());
 	if (!file.is_open())
 	{
-		std::cerr << "Failed to open file: " << filename << std::endl;
+		std::cout << "Failed to open file: " << filename << std::endl;
 		return 1;
 	}
 	std::map<std::string, float> btContainer;
@@ -41,7 +41,7 @@ int main(int ac, char **av)
 		std::string date;
 		float valueBtc;
 
-		size_t pos = line.find(',');
+		size_t pos = line.find('|');
 		if (pos != std::string::npos)
 		{
 			date = line.substr(0, pos);
@@ -50,8 +50,12 @@ int main(int ac, char **av)
 		}
 	}
 
-	setColor(GREEN);
-	std::cout << "Hello world!" << std::endl;
-	resetColor();
+	// std::map<std::string, float>::iterator it = btContainer.begin();
+	// while (it != btContainer.end())
+	// {
+	// 	std::cout << it->first << " => " << it->second << std::endl;
+	// 	it++;
+	// }
+
 	return 0;
 }
