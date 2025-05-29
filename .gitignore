@@ -1,0 +1,10 @@
+# VSCode directory
+.vscode/
+
+# Object files directory
+.obj/
+
+# Executables
+a.out
+*.out
+*.exe
