@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:35:37 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/04/21 09:58:35 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/05/30 17:47:45 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,6 @@
 
 void setColor(std::string color);
 void resetColor();
+std::string trim(const std::string &str);
 
 #endif /* ********************************************************** UTILS_H */
