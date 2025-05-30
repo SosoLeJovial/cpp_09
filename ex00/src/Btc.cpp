@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 17:48:48 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/05/30 21:55:18 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/05/31 00:31:42 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
  */
 Btc::Btc(std::string &fileData, std::string &input)
 {
-	// Load Bitcoin exchange rates from CSV file
 	std::ifstream file(fileData.c_str());
 	if (!file.is_open())
 	{
@@ -48,7 +47,6 @@ Btc::Btc(std::string &fileData, std::string &input)
 	}
 	file.close();
 
-	// Process input file line by line
 	std::ifstream fileInput(input.c_str());
 	if (!fileInput.is_open())
 	{
@@ -108,11 +106,6 @@ void Btc::parseInput(std::string &input)
 		return;
 
 	size_t pos = line.find("|");
-	if (pos == std::string::npos)
-	{
-		std::cout << RED << "Error: Invalid input format =>" << input << RESET << std::endl;
-		return;
-	}
 
 	std::string date = line.substr(0, pos);
 	if (!validDate(date))
@@ -123,11 +116,10 @@ void Btc::parseInput(std::string &input)
 
 	std::string valueStr = line.substr(pos + 1);
 	if (!validValue(valueStr))
-	{
-		std::cout << RED << "Error: Invalid value: " << valueStr << std::endl;
 		return;
-	}
-	std::cout << GREEN << date << " => " << valueStr << " = " << RESET << std::endl;
+	float value = std::atof(valueStr.c_str());
+
+	std::cout << GREEN << date << " => " << value << " = " << value * getBitcoinPrice(date) << RESET << std::endl;
 }
 
 bool Btc::isEmptyLine(const std::string &line)
@@ -185,18 +177,23 @@ bool Btc::validDate(const std::string &date)
 
 bool Btc::validValue(const std::string &value)
 {
-	// check if only digit
 	if (!isDigitStr(value))
 	{
 		std::cout << RED << "Error: Value must be a digit." << RESET << std::endl;
 		return false;
 	}
-	// check if negative
+
 	float c = std::atof(value.c_str());
 
 	if (c < 0)
 	{
 		std::cout << RED << "Error: not a positive number." << RESET << std::endl;
+		return false;
+	}
+
+	if (c > std::numeric_limits<float>::max() || c >= std::numeric_limits<int>::max())
+	{
+		std::cout << RED << "Error: too large number." << RESET << std::endl;
 		return false;
 	}
 	return true;
@@ -209,9 +206,24 @@ bool Btc::validValue(const std::string &value)
  */
 bool Btc::isDigitStr(const std::string &s)
 {
+	int signCount = 0;
+
 	for (std::size_t i = 0; i < s.length(); ++i)
 	{
-		if (s[i] < '0' || s[i] > '9' || s[i] == '-' || s[i] == '+')
+		if (s[i] == '-' || s[i] == '+')
+		{
+			signCount++;
+			if (signCount > 1 || i > 0)
+				return false;
+			continue;
+		}
+		if (s[i] == '.')
+		{
+			if (signCount > 0)
+				return false;
+			continue;
+		}
+		if (s[i] < '0' || s[i] > '9')
 			return false;
 	}
 	return true;
@@ -250,4 +262,15 @@ void Btc::printData() const
 		std::cout << it->first << " => " << it->second << std::endl;
 		it++;
 	}
+}
+
+float Btc::getBitcoinPrice(const std::string &date)
+{
+	std::map<std::string, float>::iterator it = this->dataCsv.lower_bound(date);
+
+	if (it != this->dataCsv.end())
+	{
+		return it->second;
+	}
+	return -1;
 }

@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 17:48:59 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/05/30 21:04:28 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/05/31 00:22:23 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <cstdlib>
+#include <climits>
+#include <limits>
 #include <iomanip>
 
 class Btc
@@ -47,7 +49,7 @@ public:
 	bool isDigitStr(const std::string &s);
 	bool isEmptyLine(const std::string &line);
 	bool validValue(const std::string &value);
-
+	float getBitcoinPrice(const std::string &date);
 	void printData() const;
 };
 
