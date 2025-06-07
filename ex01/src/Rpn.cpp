@@ -6,13 +6,14 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 00:20:03 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/05/22 00:29:49 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/06/01 16:33:32 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Rpn.hpp"
 #include <cctype>
 #include <sstream>
+#include <limits>
 
 Rpn::Rpn() {}
 
@@ -39,6 +40,32 @@ bool Rpn::isDigit(char c) const
 	return (c >= '0' && c <= '9');
 }
 
+bool Rpn::checkOverflow(int a, int b, char op)
+{
+	switch (op)
+	{
+	case '+':
+		if ((b > 0 && a > std::numeric_limits<int>::max() - b) ||
+			(b < 0 && a < std::numeric_limits<int>::min() - b))
+			return true;
+		break;
+	case '-':
+		if ((b > 0 && a < std::numeric_limits<int>::min() + b) ||
+			(b < 0 && a > std::numeric_limits<int>::max() + b))
+			return true;
+		break;
+	case '*':
+		if (a != 0 && b != 0 && (a > std::numeric_limits<int>::max() / b || a < std::numeric_limits<int>::min() / b))
+			return true;
+		break;
+	case '/':
+		if (b == 0)
+			return true;
+		break;
+	}
+	return false;
+}
+
 void Rpn::performOperation(char op)
 {
 	if (_stack.size() < 2)
@@ -52,12 +79,18 @@ void Rpn::performOperation(char op)
 	switch (op)
 	{
 	case '+':
+		if (checkOverflow(a, b, op))
+			throw InvalidExpressionException();
 		_stack.push(a + b);
 		break;
 	case '-':
+		if (checkOverflow(a, b, op))
+			throw InvalidExpressionException();
 		_stack.push(a - b);
 		break;
 	case '*':
+		if (checkOverflow(a, b, op))
+			throw InvalidExpressionException();
 		_stack.push(a * b);
 		break;
 	case '/':

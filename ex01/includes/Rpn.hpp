@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 00:15:03 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/05/22 00:22:13 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/06/01 16:31:55 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ private:
 	bool isOperator(char c) const;
 	bool isDigit(char c) const;
 	void performOperation(char op);
+	bool checkOverflow(int a, int b, char op);
 
 public:
 	Rpn();
