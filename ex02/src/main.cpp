@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 09:58:51 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/06/29 03:42:44 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/15 11:11:15 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,14 @@ int main(int ac, char **av)
 		return 1;
 	}
 
-	Pmerge pmerge(ac, av);
-	pmerge.sortVector();
-	pmerge.displayVector();
+	try
+	{
+		Pmerge pmerge(ac, av);
+		pmerge.sortVector();
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << '\n';
+	}
 	return 0;
 }

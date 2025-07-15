@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/06/29 03:42:03 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/15 11:04:18 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,9 @@
 class Pmerge
 {
 private:
-	std::vector<int> _numbers;
-	std::deque<int> _deq_numbers;
+	std::vector<int> _pend;
+	std::vector<int> _main;
+	std::vector<int> _rest;
 
 public:
 	Pmerge(/* args */);

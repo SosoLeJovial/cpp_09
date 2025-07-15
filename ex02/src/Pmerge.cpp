@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 13:07:10 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/06/29 03:44:05 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/15 13:21:08 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ Pmerge::Pmerge(int ac, char **av)
 		throw std::invalid_argument("Invalid number of arguments");
 	}
 
-	std::vector<int> all_numbers;
+	std::vector<int> all_main;
 	for (int i = 1; i < ac; i++)
 	{
 		if (!isValidInt(av[i]))
@@ -32,9 +32,10 @@ Pmerge::Pmerge(int ac, char **av)
 			std::cerr << RED << "Error: Invalid input. Only integers are allowed." << RESET << std::endl;
 			throw std::invalid_argument("Invalid input");
 		}
-		std::cout << GREEN << "Input: " << av[i] << RESET << std::endl;
-		all_numbers.push_back(std::atoi(av[i]));
+		all_main.push_back(std::atoi(av[i]));
 	}
+	_main = all_main;
+	std::cout << GREEN << "Numbers to sort: " << ac - 1 << RESET << std::endl;
 }
 
 Pmerge::Pmerge(const Pmerge &src)
@@ -79,12 +80,10 @@ bool Pmerge::isValidInt(const std::string &str) const
 			return false;
 	}
 
-	// Vérifier l'overflow avec strtol
 	char *endptr;
 	errno = 0;
 	long val = std::strtol(str.c_str(), &endptr, 10);
 
-	// Vérifier si conversion complète et pas d'overflow
 	return (errno != ERANGE && *endptr == '\0' &&
 			val >= std::numeric_limits<int>::min() &&
 			val <= std::numeric_limits<int>::max());
@@ -92,31 +91,96 @@ bool Pmerge::isValidInt(const std::string &str) const
 
 void Pmerge::sortVector()
 {
-	size_t size = _numbers.size();
+	// step 1: make pairs of numbers and sort them
+
+	size_t size = _main.size();
 	size_t pairSize = 1;
+	size_t levels = 0;
 
 	for (size_t i = 0; i < size; i += pairSize * 2)
 	{
-		size_t mid = std::min(i + pairSize, size);
-		size_t end = std::min(i + pairSize * 2, size);
-
-		std::inplace_merge(_numbers.begin() + i, _numbers.begin() + mid, _numbers.begin() + end);
+		std::cout << PINK << "levels: " << levels << RESET << std::endl;
+		for (size_t j = i; j + pairSize < size; j += pairSize * 2)
+		{
+			if (j + pairSize >= size)
+				break;
+			std::cout << RED << "Pair: ";
+			for (size_t k = 0; k < pairSize; k++)
+			{
+				std::cout << _main[j + k] << " ";
+			}
+			std::cout << "and ";
+			for (size_t k = 0; k < pairSize; k++)
+			{
+				std::cout << _main[j + pairSize + k] << " ";
+			}
+			std::cout << RESET << std::endl;
+			std::cout << CYAN << "Sorting pair: " << _main[j] << " and " << _main[j + pairSize] << RESET << std::endl;
+			if (_main[j] > _main[j + pairSize])
+			{
+				for (size_t k = 0; k < pairSize; k++)
+				{
+					std::swap(_main[j + k], _main[j + pairSize + k]);
+				}
+			}
+			std::cout << RED << "j: " << j << RESET << std::endl;
+			displayVector();
+			std::cout << std::endl;
+		}
+		std::cout << std::endl
+				  << std::endl;
 		pairSize *= 2;
+		levels++;
+	}
+
+	std::cout << PINK << "levels: " << levels << RESET << std::endl;
+
+	_rest.clear();
+	_pend.clear();
+	// step 2: insertion in pend
+
+	size_t i = 0;
+
+	pairSize = 1;
+	for (; i < size; i += 2)
+	{
+		if (i + 1 < size)
+		{
+			_pend.push_back(_main[i + pairSize]);
+		}
+	}
+	displayVector();
+	for (; i < size; i++)
+	{
+		_rest.push_back(_main[i]);
 	}
 }
 
 void Pmerge::displayVector() const
 {
-	if (_numbers.empty())
-	{
-		std::cout << "No numbers to display." << std::endl;
-		return;
-	}
 
-	std::cout << "Sorted numbers: ";
-	for (std::vector<int>::const_iterator it = _numbers.begin(); it != _numbers.end(); ++it)
+	std::cout << CYAN << "Main numbers: ";
+	for (std::vector<int>::const_iterator it = _main.begin(); it != _main.end(); ++it)
 	{
-		std::cout << *it << " ";
+		std::cout << BLUE << *it << " ";
 	}
 	std::cout << std::endl;
+	if (!_pend.empty())
+	{
+		std::cout << GREEN << "Pend numbers: ";
+		for (std::vector<int>::const_iterator it = _pend.begin(); it != _pend.end(); ++it)
+		{
+			std::cout << GREEN << *it << " ";
+		}
+		std::cout << std::endl;
+	}
+	if (!_rest.empty())
+	{
+		std::cout << YELLOW << "Rest numbers: ";
+		for (std::vector<int>::const_iterator it = _rest.begin(); it != _rest.end(); ++it)
+		{
+			std::cout << *it << " ";
+		}
+		std::cout << RESET << std::endl;
+	}
 }
