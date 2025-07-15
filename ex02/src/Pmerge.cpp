@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 13:07:10 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/15 13:21:08 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/15 16:52:37 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,60 +94,61 @@ void Pmerge::sortVector()
 	// step 1: make pairs of numbers and sort them
 
 	size_t size = _main.size();
-	size_t pairSize = 1;
+	std::cout << YELLOW << _main.size() << std::endl;
+	size_t pairSize = 2;
 	size_t levels = 0;
 
-	for (size_t i = 0; i < size; i += pairSize * 2)
+	displayVector();
+
+	while (pairSize < size)
 	{
 		std::cout << PINK << "levels: " << levels << RESET << std::endl;
-		for (size_t j = i; j + pairSize < size; j += pairSize * 2)
+		// Making pair
+		for (size_t j = (pairSize / 2) - 1; j + (pairSize / 2) < size; j += pairSize)
 		{
-			if (j + pairSize >= size)
-				break;
-			std::cout << RED << "Pair: ";
-			for (size_t k = 0; k < pairSize; k++)
-			{
-				std::cout << _main[j + k] << " ";
-			}
-			std::cout << "and ";
-			for (size_t k = 0; k < pairSize; k++)
-			{
-				std::cout << _main[j + pairSize + k] << " ";
-			}
+			// sort pair
+
 			std::cout << RESET << std::endl;
-			std::cout << CYAN << "Sorting pair: " << _main[j] << " and " << _main[j + pairSize] << RESET << std::endl;
-			if (_main[j] > _main[j + pairSize])
+			std::cout << CYAN << "Sorting pair: " << _main[j] << " and " << _main[j + (pairSize / 2)] << RESET << std::endl;
+			std::cout << GREEN << "Size pair: " << pairSize << RESET << std::endl;
+			if (j < size && j + (pairSize / 2) < size && _main[j] > _main[j + (pairSize / 2)])
 			{
-				for (size_t k = 0; k < pairSize; k++)
+				std::cout << j << std::endl;
+				for (size_t k = j - (pairSize / 2) + 1; k <= j; k++)
 				{
-					std::swap(_main[j + k], _main[j + pairSize + k]);
+					std::cout << "Swap " << _main[k] << " and " << _main[k + (pairSize / 2)] << std::endl;
+					std::swap(_main[k], _main[k + (pairSize / 2)]);
 				}
 			}
-			std::cout << RED << "j: " << j << RESET << std::endl;
 			displayVector();
 			std::cout << std::endl;
 		}
+
 		std::cout << std::endl
 				  << std::endl;
+		std::cout << RED << "pair size: " << pairSize << RESET << std::endl;
 		pairSize *= 2;
 		levels++;
 	}
 
-	std::cout << PINK << "levels: " << levels << RESET << std::endl;
+	// std::cout << PINK << "levels: " << levels << RESET << std::endl;
 
 	_rest.clear();
 	_pend.clear();
 	// step 2: insertion in pend
-
+	// main to rest
+	// last of pair into pend
 	size_t i = 0;
 
-	pairSize = 1;
+	for (size_t j = pairSize / 2; j < _main.size(); j++)
+	{
+		_rest.push_back(_main[j]);
+		// _main.erase(_main[j]);
+	}
 	for (; i < size; i += 2)
 	{
 		if (i + 1 < size)
-		{
-			_pend.push_back(_main[i + pairSize]);
-		}
+			_pend.push_back(_main[i]);
 	}
 	displayVector();
 	for (; i < size; i++)
