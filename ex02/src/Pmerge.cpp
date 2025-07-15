@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 13:07:10 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/15 16:52:37 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/15 17:47:12 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ void Pmerge::sortVector()
 	// step 1: make pairs of numbers and sort them
 
 	size_t size = _main.size();
-	std::cout << YELLOW << _main.size() << std::endl;
 	size_t pairSize = 2;
 	size_t levels = 0;
 
@@ -102,59 +101,50 @@ void Pmerge::sortVector()
 
 	while (pairSize < size)
 	{
-		std::cout << PINK << "levels: " << levels << RESET << std::endl;
 		// Making pair
 		for (size_t j = (pairSize / 2) - 1; j + (pairSize / 2) < size; j += pairSize)
 		{
 			// sort pair
 
-			std::cout << RESET << std::endl;
-			std::cout << CYAN << "Sorting pair: " << _main[j] << " and " << _main[j + (pairSize / 2)] << RESET << std::endl;
-			std::cout << GREEN << "Size pair: " << pairSize << RESET << std::endl;
+			// std::cout << RESET << std::endl;
+			// std::cout << CYAN << "Sorting pair: " << _main[j] << " and " << _main[j + (pairSize / 2)] << RESET << std::endl;
+			// std::cout << GREEN << "Size pair: " << pairSize << RESET << std::endl;
 			if (j < size && j + (pairSize / 2) < size && _main[j] > _main[j + (pairSize / 2)])
 			{
-				std::cout << j << std::endl;
 				for (size_t k = j - (pairSize / 2) + 1; k <= j; k++)
 				{
-					std::cout << "Swap " << _main[k] << " and " << _main[k + (pairSize / 2)] << std::endl;
+					// std::cout << "Swap " << _main[k] << " and " << _main[k + (pairSize / 2)] << std::endl;
 					std::swap(_main[k], _main[k + (pairSize / 2)]);
 				}
 			}
-			displayVector();
-			std::cout << std::endl;
 		}
-
-		std::cout << std::endl
-				  << std::endl;
-		std::cout << RED << "pair size: " << pairSize << RESET << std::endl;
 		pairSize *= 2;
 		levels++;
 	}
-
-	// std::cout << PINK << "levels: " << levels << RESET << std::endl;
 
 	_rest.clear();
 	_pend.clear();
 	// step 2: insertion in pend
 	// main to rest
-	// last of pair into pend
-	size_t i = 0;
+	//  first of pair begin by a1 to an ect... into pend
+
+	displayVector();
 
 	for (size_t j = pairSize / 2; j < _main.size(); j++)
 	{
 		_rest.push_back(_main[j]);
-		// _main.erase(_main[j]);
 	}
-	for (; i < size; i += 2)
+	for (size_t i = _main.size() - 1; i >= pairSize / 2; i--)
 	{
-		if (i + 1 < size)
-			_pend.push_back(_main[i]);
+		_main.erase(_main.begin() + i);
 	}
-	displayVector();
-	for (; i < size; i++)
-	{
-		_rest.push_back(_main[i]);
-	}
+
+	// for (; i < size; i += 2)
+	// {
+	// 	if (i + 1 < size)
+	// 		_pend.push_back(_main[i]);
+	// }
+	displayPair(pairSize);
 }
 
 void Pmerge::displayVector() const
@@ -184,4 +174,17 @@ void Pmerge::displayVector() const
 		}
 		std::cout << RESET << std::endl;
 	}
+}
+
+void Pmerge::displayPair(size_t pairSize) const
+{
+	std::cout << CYAN << "Pairs of numbers: ";
+	for (size_t i = 0; i < _main.size(); i += pairSize)
+	{
+		if (i + 1 < _main.size())
+		{
+			std::cout << BLUE << "(" << _main[i] << ", " << _main[i + 1] << ") ";
+		}
+	}
+	std::cout << std::endl;
 }

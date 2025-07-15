@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/15 11:04:18 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/15 17:44:45 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ public:
 	// sorting functions
 	void sortVector();
 	void displayVector() const;
+	void displayPair(size_t pairSize) const;
 	// void sortDeque();
 };
 
