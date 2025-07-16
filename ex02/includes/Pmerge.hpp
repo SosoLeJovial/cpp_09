@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/16 14:49:42 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/16 16:43:43 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,13 @@ class Pmerge
 {
 private:
 	std::vector<int> _numbers;
-	std::vector<int> _main;
+	std::vector<Pair> _main;
 	std::vector<int> _rest;
-	std::vector<int> _pend;
+	std::vector<Pair> _pend;
 
 	Pmerge(/* args */);
 
 public:
-
 	// ========================================================================
 	// CONSTRUCTORS AND DESTRUCTOR
 	// ========================================================================
@@ -75,7 +74,7 @@ public:
 
 	void sort();
 
-	void createPairs();
+	size_t createPairs();
 
 	void makePairs(std::vector<Pair> &pairs, size_t pairSize);
 
@@ -86,9 +85,11 @@ public:
 	// ========================================================================
 
 	void displayNumbers() const;
+	void displayRest() const;
+	void displayMain() const;
+	void displayPend() const;
 
 	void displayPair(const std::vector<Pair> &pairs) const;
-
 };
 
 #endif
