@@ -6,7 +6,7 @@
 #    By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/06 00:15:05 by tsofien-          #+#    #+#              #
-#    Updated: 2025/06/28 00:49:34 by tsofien-         ###   ########.fr        #
+#    Updated: 2025/07/16 14:50:24 by tsofien-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,9 +16,15 @@
 
 NAME	= PmergeMe
 
+DEBUG	?= 0
+
 CC 		= c++
 CFLAGS	= -Wall -Wextra -Werror -std=c++98 -g3
 DFLAGS	= -MMD -MF $(@:.o=.d)
+
+ifeq ($(DEBUG), 1)
+    CFLAGS += -DDEBUG
+endif
 
 ################################################################################
 #                                 PROGRAM'S SRCS                               #
@@ -65,6 +71,9 @@ fclean:	clean
 	rm -f $(NAME)
 
 re: fclean all
+
+debug:
+	$(MAKE) DEBUG=1
 
 .PHONY:		all clean fclean re
 

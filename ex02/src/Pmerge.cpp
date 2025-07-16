@@ -5,16 +5,16 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/26 13:07:10 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/16 10:55:56 by tsofien-         ###   ########.fr       */
+/*   Created: 2025/07/16 14:41:26 by tsofien-          #+#    #+#             */
+/*   Updated: 2025/07/16 14:50:42 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Pmerge.hpp"
 
-Pmerge::Pmerge(/* args */)
-{
-}
+// ========================================================================
+// CONSTRUCTORS AND DESTRUCTOR
+// ========================================================================
 
 Pmerge::Pmerge(int ac, char **av)
 {
@@ -23,8 +23,7 @@ Pmerge::Pmerge(int ac, char **av)
 		std::cerr << RED << "Usage: " << av[0] << " <numbers>" << RESET << std::endl;
 		throw std::invalid_argument("Invalid number of arguments");
 	}
-
-	std::vector<int> all_main;
+	std::vector<int> all_numbers;
 	for (int i = 1; i < ac; i++)
 	{
 		if (!isValidInt(av[i]))
@@ -32,12 +31,14 @@ Pmerge::Pmerge(int ac, char **av)
 			std::cerr << RED << "Error: Invalid input. Only integers are allowed." << RESET << std::endl;
 			throw std::invalid_argument("Invalid input");
 		}
-		all_main.push_back(std::atoi(av[i]));
+		all_numbers.push_back(std::atoi(av[i]));
 	}
-	_main = all_main;
+	for (size_t i = 0; i < all_numbers.size(); i++)
+	{
+		_numbers.push_back(all_numbers[i]);
+	}
 	std::cout << GREEN << "Numbers to sort: " << ac - 1 << RESET << std::endl;
 }
-
 Pmerge::Pmerge(const Pmerge &src)
 {
 	(void)src;
@@ -49,147 +50,163 @@ Pmerge &Pmerge::operator=(const Pmerge &rhs)
 	return *this;
 }
 
-Pmerge::~Pmerge()
-{
-}
+Pmerge::~Pmerge() {};
+
+
+	// ========================================================================
+	// PARSING AND VALIDATION FUNCTIONS
+	// ========================================================================
 
 bool Pmerge::isDigit(const std::string &str) const
 {
 	if (str.empty())
 		return false;
-
 	size_t start = (str[0] == '-' || str[0] == '+') ? 1 : 0;
-	for (size_t i = 0; i < start; i++)
+	for (size_t i = start; i < str.length(); i++)
 	{
 		if (!std::isdigit(str[i]))
 			return false;
 	}
-
 	return true;
 }
 
-bool Pmerge::isValidInt(const std::string &str) const
-{
-	if (str.empty() || str[0] == '-' || str[0] == '+')
-		return false;
-
-	size_t start = (str[0] == '-' || str[0] == '+') ? 1 : 0;
-	for (size_t i = 0; i < start; i++)
-	{
-		if (!std::isdigit(str[i]))
+	bool Pmerge::isValidInt(const std::string &str) const
+		{
+		if (str.empty() || str[0] == '-' || str[0] == '+')
 			return false;
+
+		size_t start = (str[0] == '-' || str[0] == '+') ? 1 : 0;
+		for (size_t i = start; i < str.length(); i++)
+		{
+			if (!std::isdigit(str[i]))
+				return false;
+		}
+
+		char *endptr;
+		errno = 0;
+		long val = std::strtol(str.c_str(), &endptr, 10);
+
+		return (errno != ERANGE && *endptr == '\0' &&
+				val >= std::numeric_limits<int>::min() &&
+				val <= std::numeric_limits<int>::max());
 	}
 
-	char *endptr;
-	errno = 0;
-	long val = std::strtol(str.c_str(), &endptr, 10);
+// ========================================================================
+// SORTING FUNCTIONS (FORD-JOHNSON ALGORITHM)
+// ========================================================================
 
-	return (errno != ERANGE && *endptr == '\0' &&
-			val >= std::numeric_limits<int>::min() &&
-			val <= std::numeric_limits<int>::max());
-}
-
-void Pmerge::sortVector()
-{
-	// step 1: make pairs of numbers and sort them
-
-	size_t size = _main.size();
-	size_t pairSize = 2;
-	size_t levels = 0;
-
-	displayVector();
-
-	while (pairSize < size)
-	{
-		// Making pair
-		for (size_t j = (pairSize / 2) - 1; j + (pairSize / 2) < size; j += pairSize)
+	void Pmerge::sort()
 		{
-			// sort pair
+		std::vector<Pair> pairs;
+		int stragglers = -1;
 
-			// std::cout << RESET << std::endl;
-			// std::cout << CYAN << "Sorting pair: " << _main[j] << " and " << _main[j + (pairSize / 2)] << RESET << std::endl;
-			// std::cout << GREEN << "Size pair: " << pairSize << RESET << std::endl;
-			if (j < size && j + (pairSize / 2) < size && _main[j] > _main[j + (pairSize / 2)])
+		if (_numbers.size() % 2 != 0)
+		{
+			stragglers = _numbers.back();
+			_numbers.pop_back();
+		}
+		createPairs();
+		makePairs(pairs, 2);
+
+		// Display the initial state of the numbers and pairs
+		displayNumbers();
+		displayPair(pairs);
+	}
+	void Pmerge::createPairs()
+	{
+		size_t size = _numbers.size();
+		size_t pairSize = 2;
+		size_t levels = 0;
+
+		while (pairSize < size)
+		{
+			for (size_t j = (pairSize / 2) - 1; j + (pairSize / 2) < size; j += pairSize)
 			{
-				for (size_t k = j - (pairSize / 2) + 1; k <= j; k++)
-				{
-					// std::cout << "Swap " << _main[k] << " and " << _main[k + (pairSize / 2)] << std::endl;
-					std::swap(_main[k], _main[k + (pairSize / 2)]);
-				}
+				if (j < size && j + (pairSize / 2) < size && _numbers[j] > _numbers[j + (pairSize / 2)])
+					for (size_t k = j - (pairSize / 2) + 1; k <= j; k++)
+						std::swap(_numbers[k], _numbers[k + (pairSize / 2)]);
 			}
+			pairSize *= 2;
+			levels++;
 		}
-		pairSize *= 2;
-		levels++;
 	}
 
-	_rest.clear();
-	_pend.clear();
-	displayVector();
-
-	std::vector<Pair> pairs;
-	makePairs(pairs, 2);
-	displayPair(pairs);
-}
-
-void Pmerge::displayVector() const
-{
-
-	std::cout << CYAN << "Main numbers: ";
-	for (std::vector<int>::const_iterator it = _main.begin(); it != _main.end(); ++it)
+	void Pmerge::makePairs(std::vector<Pair> &pairs, size_t pairSize)
 	{
-		std::cout << BLUE << *it << " ";
-	}
-	std::cout << std::endl;
-	if (!_pend.empty())
-	{
-		std::cout << GREEN << "Pend numbers: ";
-		for (std::vector<int>::const_iterator it = _pend.begin(); it != _pend.end(); ++it)
+		size_t size = _numbers.size();
+
+		for (size_t i = 0; i < size; i += pairSize)
 		{
-			std::cout << GREEN << *it << " ";
+			if (i + pairSize > size)
+				break;
+
+			size_t pair_number = i / pairSize;
+			type pair_side = pair_number % 2 ? B : A;
+			size_t index = pair_number / 2 + 1;
+
+			std::vector<int> numbers(_numbers.begin() + i, _numbers.begin() + i + pairSize);
+			Pair new_pair = {index, pair_side, numbers};
+			pairs.push_back(new_pair);
 		}
-		std::cout << std::endl;
 	}
-	if (!_rest.empty())
+
+	void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
+
 	{
-		std::cout << YELLOW << "Rest numbers: ";
-		for (std::vector<int>::const_iterator it = _rest.begin(); it != _rest.end(); ++it)
+		if (pairSize < 1)
+			return;
+		if (pairSize == 2)
+			pairSize = 1;
+		
+		// push the rest in rest container
+		size_t restIndex = _main.size() % pairSize;
+		for (size_t i = _main.size() - 1; i > _main.size() - restIndex; i--)
 		{
-			std::cout << *it << " ";
+			_rest.push_back(_main[i]);
+			_main.pop_back();
+		}
+		#ifdef DEBUG
+
+		std::cout << BLUE << "Rest elements pushed: " << RESET << std::endl;
+		displayNumbers();
+
+		#endif
+
+		// push all b1 b2 b3 b4 ect in pend and an in main
+		// insert with Jacob-Stahl sequence
+		// push all in numbers and repeat
+
+		recursivePairs(pairs, pairSize / 2);
+	}
+
+	// ========================================================================
+	// DISPLAY AND DEBUG FUNCTIONS
+	// ========================================================================
+
+	void Pmerge::displayNumbers() const
+	{
+		std::cout << CYAN << "Main numbers: ";
+		for (std::vector<int>::const_iterator it = _numbers.begin(); it != _numbers.end(); ++it)
+		{
+			std::cout << BLUE << *it << " ";
 		}
 		std::cout << RESET << std::endl;
 	}
-}
 
-void Pmerge::displayPair(std::vector<Pair> &pairs) const
-{
-	std::cout << MAGENTA << "Pairs: " << RESET << std::endl;
-	std::vector<Pair>::const_iterator it = pairs.begin();
-	for (; it != pairs.end(); ++it)
+	void Pmerge::displayPair(const std::vector<Pair> &pairs) const
 	{
-		std::cout << GREEN << "Index: " << it->index << " | Type: " << (it->pair_type == A ? "A" : "B") << " | Pair: " << BLUE;
-		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
+		std::cout << MAGENTA << "Pairs: " << RESET << std::endl;
+		std::vector<Pair>::const_iterator it = pairs.begin();
+		for (; it != pairs.end(); ++it)
 		{
-			std::cout << *vec_it << " ";
+			std::cout << GREEN << "Index: " << it->index << " | Type: " << (it->pair_type == A ? "A" : "B") << " | Pair: " << BLUE;
+			for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
+			{
+				std::cout << *vec_it << " ";
+			}
+			std::cout << RESET << std::endl;
 		}
-		std::cout << RESET << std::endl;
 	}
-}
 
-void Pmerge::makePairs(std::vector<Pair> &pairs, size_t pairSize)
-{
-	size_t size = _main.size();
 
-	for (size_t i = 0; i < size; i += pairSize)
-	{
-		if (i + pairSize > size)
-			break;
-
-		size_t pair_number = i / pairSize;
-		type pair_side = pair_number % 2 ? B : A;
-		size_t index = pair_number / 2 + 1;
-
-		std::vector<int> _numbers(_main.begin() + i, _main.begin() + i + pairSize);
-		Pair new_pair = {index, pair_side, _numbers};
-		pairs.push_back(new_pair);
-	}
-}
+/* ************************************************************************** */
