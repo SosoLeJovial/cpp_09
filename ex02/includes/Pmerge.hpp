@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/15 17:44:45 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/16 10:37:17 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,22 @@
 #include <limits>
 #include <cerrno>
 #include "utils.hpp"
+
+// recherche dichotomique via lower_bound
+// Jacob stahl toujours commencer par 3
+
+enum type
+{
+	A = 0,
+	B = 1
+};
+
+struct Pair
+{
+	size_t index;
+	type pair_type;
+	std::vector<int> pair;
+};
 
 class Pmerge
 {
@@ -47,8 +63,9 @@ public:
 
 	// sorting functions
 	void sortVector();
+	void makePairs(std::vector<Pair> &pairs, size_t pairSize);
 	void displayVector() const;
-	void displayPair(size_t pairSize) const;
+	void displayPair(std::vector<Pair> &pairs) const;
 	// void sortDeque();
 };
 

@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 13:07:10 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/15 17:47:12 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/16 10:55:56 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,27 +124,11 @@ void Pmerge::sortVector()
 
 	_rest.clear();
 	_pend.clear();
-	// step 2: insertion in pend
-	// main to rest
-	//  first of pair begin by a1 to an ect... into pend
-
 	displayVector();
 
-	for (size_t j = pairSize / 2; j < _main.size(); j++)
-	{
-		_rest.push_back(_main[j]);
-	}
-	for (size_t i = _main.size() - 1; i >= pairSize / 2; i--)
-	{
-		_main.erase(_main.begin() + i);
-	}
-
-	// for (; i < size; i += 2)
-	// {
-	// 	if (i + 1 < size)
-	// 		_pend.push_back(_main[i]);
-	// }
-	displayPair(pairSize);
+	std::vector<Pair> pairs;
+	makePairs(pairs, 2);
+	displayPair(pairs);
 }
 
 void Pmerge::displayVector() const
@@ -176,15 +160,36 @@ void Pmerge::displayVector() const
 	}
 }
 
-void Pmerge::displayPair(size_t pairSize) const
+void Pmerge::displayPair(std::vector<Pair> &pairs) const
 {
-	std::cout << CYAN << "Pairs of numbers: ";
-	for (size_t i = 0; i < _main.size(); i += pairSize)
+	std::cout << MAGENTA << "Pairs: " << RESET << std::endl;
+	std::vector<Pair>::const_iterator it = pairs.begin();
+	for (; it != pairs.end(); ++it)
 	{
-		if (i + 1 < _main.size())
+		std::cout << GREEN << "Index: " << it->index << " | Type: " << (it->pair_type == A ? "A" : "B") << " | Pair: " << BLUE;
+		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
 		{
-			std::cout << BLUE << "(" << _main[i] << ", " << _main[i + 1] << ") ";
+			std::cout << *vec_it << " ";
 		}
+		std::cout << RESET << std::endl;
 	}
-	std::cout << std::endl;
+}
+
+void Pmerge::makePairs(std::vector<Pair> &pairs, size_t pairSize)
+{
+	size_t size = _main.size();
+
+	for (size_t i = 0; i < size; i += pairSize)
+	{
+		if (i + pairSize > size)
+			break;
+
+		size_t pair_number = i / pairSize;
+		type pair_side = pair_number % 2 ? B : A;
+		size_t index = pair_number / 2 + 1;
+
+		std::vector<int> _numbers(_main.begin() + i, _main.begin() + i + pairSize);
+		Pair new_pair = {index, pair_side, _numbers};
+		pairs.push_back(new_pair);
+	}
 }

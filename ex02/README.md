@@ -1,5 +1,5 @@
 ```
-Ford-Johnson algorithm (Merge-Insertion Sort):
+	Ford-Johnson algorithm (Merge-Insertion Sort):
 
 
 
