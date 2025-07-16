@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 14:41:26 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/16 17:41:17 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/16 17:56:10 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,6 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		_numbers.pop_back();
 	}
 #ifdef DEBUG
-
 	displayRest();
 #endif
 	// push all b1 b2 b3 b4 ect in pend and an in main
@@ -206,8 +205,8 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		}
 	}
 	displayNumbers();
-	makePairs(pairs, pairSize / 2);
-	recursivePairs(pairs, pairSize / 2);
+	// makePairs(pairs, pairSize / 2);
+	// recursivePairs(pairs, pairSize / 2);
 }
 
 // ========================================================================
@@ -241,14 +240,11 @@ void Pmerge::displayMain() const
 		std::cout << CYAN << "Main numbers: None" << RESET << std::endl;
 		return;
 	}
-	{
-		/* code */
-	}
 
 	std::cout << CYAN << "Main numbers: ";
 	for (std::vector<Pair>::const_iterator it = _main.begin(); it != _main.end(); ++it)
 	{
-		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << BLUE << it->index << " ";
+		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << it->index << " " << BLUE;
 		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
 		{
 			std::cout << *vec_it << " ";
@@ -269,7 +265,7 @@ void Pmerge::displayPend() const
 	std::cout << CYAN << "Pend numbers: ";
 	for (std::vector<Pair>::const_iterator it = _pend.begin(); it != _pend.end(); ++it)
 	{
-		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << BLUE << it->index << " ";
+		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << it->index << " " << BLUE;
 		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
 		{
 			std::cout << *vec_it << " ";
