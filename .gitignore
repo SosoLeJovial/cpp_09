@@ -6,5 +6,8 @@
 
 # Executables
 a.out
+PmergeMe
 *.out
 *.exe
+*.o
+*.d
