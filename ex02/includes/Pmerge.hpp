@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/16 16:43:43 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/21 13:16:01 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ struct Pair
 class Pmerge
 {
 private:
+	int jcb_start;
 	std::vector<int> _numbers;
 	std::vector<Pair> _main;
 	std::vector<int> _rest;
@@ -79,6 +80,8 @@ public:
 	void makePairs(std::vector<Pair> &pairs, size_t pairSize);
 
 	void recursivePairs(std::vector<Pair> &pairs, size_t pairSize);
+
+	int jacobstahl_numbers(int n);
 
 	// ========================================================================
 	// DISPLAY AND DEBUG FUNCTIONS

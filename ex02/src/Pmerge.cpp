@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 14:41:26 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/16 17:56:10 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/21 13:16:28 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ Pmerge::Pmerge(int ac, char **av)
 	{
 		_numbers.push_back(all_numbers[i]);
 	}
+	jcb_start = 3;
 	std::cout << GREEN << "Numbers to sort: " << ac - 1 << RESET << std::endl;
 }
 Pmerge::Pmerge(const Pmerge &src)
@@ -96,6 +97,9 @@ bool Pmerge::isValidInt(const std::string &str) const
 
 void Pmerge::sort()
 {
+	displayNumbers();
+	std::cout << PINK << "Number to start: " << _numbers.size() << RESET << std::endl;
+
 	std::vector<Pair> pairs;
 	int stragglers = -1;
 
@@ -138,6 +142,8 @@ void Pmerge::makePairs(std::vector<Pair> &pairs, size_t pairSize)
 {
 	pairs.clear();
 	size_t size = _numbers.size();
+	if (pairSize < 1)
+		return;
 
 	for (size_t i = 0; i < size; i += pairSize)
 	{
@@ -162,6 +168,7 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 	_main.clear();
 	_pend.clear();
 	_rest.clear();
+
 	// push the rest in rest container
 	size_t restIndex = _numbers.size() % pairSize;
 	size_t sizeNumbers = _numbers.size();
@@ -192,6 +199,13 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 #endif
 
 	// insert with Jacob-Stahl sequence
+
+	int numbersToInsert = jcb_start - jacobstahl_numbers(jcb_start);
+	int jcb = jacobstahl_numbers(jcb_start);
+
+	std::cout << RED << "Jacob-Stahl sequence: " << jcb << RESET << std::endl;
+	std::cout << RED << "Number to insert " << numbersToInsert << RESET << std::endl;
+
 	for (std::vector<Pair>::const_iterator it = _pend.begin(); it != _pend.end(); ++it)
 		_main.push_back(*it);
 
@@ -204,9 +218,40 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 			_numbers.push_back(*vec_it);
 		}
 	}
+
+	for (std::vector<int>::const_iterator it = _rest.begin(); it != _rest.end(); ++it)
+	{
+		_numbers.push_back(*it);
+	}
 	displayNumbers();
-	// makePairs(pairs, pairSize / 2);
-	// recursivePairs(pairs, pairSize / 2);
+	if (pairSize > 1)
+	{
+#ifdef DEBUG
+		std::cout << GREEN << "Recursive pairs with pair size: " << pairSize << RESET << std::endl;
+#endif
+		pairSize /= 2;
+	}
+	else
+		pairSize = 0;
+	makePairs(pairs, pairSize);
+	recursivePairs(pairs, pairSize);
+}
+
+int Pmerge::jacobstahl_numbers(int n)
+{
+	if (n == 0)
+		return 0;
+	if (n == 1)
+		return 1;
+
+	int prev2 = 0, prev1 = 1;
+	for (int i = 2; i <= n; i++)
+	{
+		int current = prev1 + 2 * prev2;
+		prev2 = prev1;
+		prev1 = current;
+	}
+	return prev1;
 }
 
 // ========================================================================
