@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 14:41:26 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/21 13:16:28 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/21 15:43:43 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,6 +202,19 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 
 	int numbersToInsert = jcb_start - jacobstahl_numbers(jcb_start);
 	int jcb = jacobstahl_numbers(jcb_start);
+	size_t currentLimit = 1;
+	while (currentLimit < _pend.size())
+	{
+		currentLimit = jacobstahl_numbers(jcb_start);
+		size_t end = (currentLimit < _pend.size()) ? currentLimit : _pend.size();
+		for (size_t i = currentLimit; i < end; i--)
+		{
+			insert_pair(_main, _pend[i], currentLimit);
+			_pend.erase(_pend.begin() + i);
+		}
+
+		jcb_start++;
+	}
 
 	std::cout << RED << "Jacob-Stahl sequence: " << jcb << RESET << std::endl;
 	std::cout << RED << "Number to insert " << numbersToInsert << RESET << std::endl;
@@ -235,6 +248,25 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		pairSize = 0;
 	makePairs(pairs, pairSize);
 	recursivePairs(pairs, pairSize);
+}
+
+void Pmerge::insert_pair(std::vector<Pair> &main, const Pair &element, int search_limit)
+{
+	std::vector<Pair>::iterator it = std::lower_bound(main.begin(), main.begin() + search_limit,
+													  element, compare_pairs);
+	main.insert(it, element);
+}
+
+bool Pmerge::compare_pairs(const Pair &a, const Pair &b)
+{
+	if (a.pair[0] == b.pair[0])
+		return a.index < b.index; // If first elements are equal, compare by index
+	// Otherwise, compare by the first element of the pair
+	if (a.pair.empty() || b.pair.empty())
+	{
+		return a.pair[0] < b.pair[0];
+	}
+	return false;
 }
 
 int Pmerge::jacobstahl_numbers(int n)

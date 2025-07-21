@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/21 13:16:01 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/21 15:43:15 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,10 @@ public:
 	void makePairs(std::vector<Pair> &pairs, size_t pairSize);
 
 	void recursivePairs(std::vector<Pair> &pairs, size_t pairSize);
+
+	void insert_pair(std::vector<Pair> &main, const Pair &element, int search_limit);
+
+	static bool compare_pairs(const Pair &a, const Pair &b);
 
 	int jacobstahl_numbers(int n);
 
