@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/21 18:14:49 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/24 00:24:09 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,10 @@ public:
 
 	bool isValidInt(const std::string &str) const;
 
+	bool has_duplicates(const std::vector<int> &vec);
+
+	bool is_sort(const std::vector<int> &vec);
+
 	// ========================================================================
 	// SORTING FUNCTIONS (FORD-JOHNSON ALGORITHM)
 	// ========================================================================
@@ -85,6 +89,8 @@ public:
 
 	static bool compare_pairs(const Pair &a, const Pair &b);
 
+	size_t find_partner_position(const Pair &pend_element);
+
 	static int jacobstahl_numbers(int n);
 
 	// ========================================================================
@@ -95,8 +101,9 @@ public:
 	void displayRest() const;
 	void displayMain() const;
 	void displayPend() const;
-
 	void displayPair(const std::vector<Pair> &pairs) const;
+
+	std::vector<int> getNumbers() const;
 };
 
 #endif

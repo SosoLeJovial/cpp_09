@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 14:41:26 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/23 22:27:57 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/24 00:23:58 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,20 +34,32 @@ Pmerge::Pmerge(int ac, char **av)
 		all_numbers.push_back(std::atoi(av[i]));
 	}
 	for (size_t i = 0; i < all_numbers.size(); i++)
-	{
 		_numbers.push_back(all_numbers[i]);
-	}
 	jcb_start = 3;
-	std::cout << GREEN << "Numbers to sort: " << ac - 1 << RESET << std::endl;
 }
+
 Pmerge::Pmerge(const Pmerge &src)
 {
-	(void)src;
+	if (this != &src)
+	{
+		jcb_start = src.jcb_start;
+		_numbers = src._numbers;
+		_main = src._main;
+		_rest = src._rest;
+		_pend = src._pend;
+	}
 }
 
 Pmerge &Pmerge::operator=(const Pmerge &rhs)
 {
-	(void)rhs;
+	if (this != &rhs)
+	{
+		jcb_start = rhs.jcb_start;
+		_numbers = rhs._numbers;
+		_main = rhs._main;
+		_rest = rhs._rest;
+		_pend = rhs._pend;
+	}
 	return *this;
 }
 
@@ -91,6 +103,29 @@ bool Pmerge::isValidInt(const std::string &str) const
 			val <= std::numeric_limits<int>::max());
 }
 
+bool Pmerge::has_duplicates(const std::vector<int> &vec)
+{
+	std::vector<int> seen;
+	for (size_t i = 0; i < vec.size(); i++)
+	{
+		if (std::find(seen.begin(), seen.end(), vec[i]) != seen.end())
+			return true;
+		seen.push_back(vec[i]);
+	}
+	return false;
+}
+
+bool Pmerge::is_sort(const std::vector<int> &vec)
+{
+
+	for (std::vector<int>::const_iterator it = vec.begin(); it != vec.end(); ++it)
+	{
+		if (it + 1 != vec.end() && *it > *(it + 1))
+			return false;
+	}
+	return true;
+}
+
 // ========================================================================
 // SORTING FUNCTIONS (FORD-JOHNSON ALGORITHM)
 // ========================================================================
@@ -100,28 +135,50 @@ void Pmerge::sort()
 	std::vector<Pair> pairs;
 	int stragglers = -1;
 
+	if (has_duplicates(_numbers))
+	{
+		std::cerr << RED << "Error: Duplicate found." << RESET << std::endl;
+		throw std::invalid_argument("Invalid number: duplicate");
+	}
+
+	if (is_sort(_numbers))
+	{
+		std::cout << RED << "Error: Numbers are already sorted." << RESET << std::endl;
+		throw std::invalid_argument("Invalid number: already sorted");
+	}
+
+#ifdef DEBUG
+	displayNumbers();
+#endif
+
 	if (_numbers.size() % 2 != 0)
 	{
 		stragglers = _numbers.back();
 		_numbers.pop_back();
 	}
+
+#ifdef DEBUG
+	std::cout << YELLOW << "=== MAKING PAIRS ===" << RESET << std::endl;
+#endif
+
 	size_t pairSize = createPairs();
 	makePairs(pairs, pairSize);
 
-	// Display the initial state of the numbers and pairs
+#ifdef DEBUG
+	displayPair(pairs);
+	std::cout << std::endl;
+	std::cout << YELLOW << "=== RECURSIVE PAIRS ===" << RESET << std::endl;
+#endif
 
 	recursivePairs(pairs, pairSize / 2);
 	if (stragglers != -1)
 	{
-		std::cout << YELLOW << "Stragglers: " << stragglers << RESET << std::endl;
 		std::vector<int> stragglers_vector;
 		stragglers_vector.push_back(stragglers);
 		std::vector<int>::iterator it = std::lower_bound(_numbers.begin(), _numbers.end(), stragglers);
 		_numbers.insert(it, stragglers_vector.begin(), stragglers_vector.end());
 	}
-#ifdef DEBUG
 	displayNumbers();
-#endif
 }
 
 size_t Pmerge::createPairs()
@@ -167,12 +224,10 @@ void Pmerge::makePairs(std::vector<Pair> &pairs, size_t pairSize)
 }
 
 void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
-
 {
 	if (pairSize < 1)
 		return;
-	std::cout << YELLOW << "=== INSERT USING BINARY INSERT ===" << RESET << std::endl;
-	displayNumbers();
+
 	_main.clear();
 	_pend.clear();
 	_rest.clear();
@@ -184,12 +239,13 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		_rest.push_back(_numbers[i]);
 		_numbers.pop_back();
 	}
-
+#ifdef DEBUG
 	std::cout << PINK << "Rest numbers: ";
+	displayNumbers();
 	displayRest();
 	std::cout << YELLOW << "==================================" << RESET << std::endl;
+#endif
 
-	// push all b1 b2 b3 b4 ect in pend and an in main
 	for (std::vector<Pair>::const_iterator it = pairs.begin(); it != pairs.end(); ++it)
 	{
 		if (it->pair_type == A)
@@ -202,30 +258,16 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		else
 			_main.push_back(*it);
 	}
-	// std::cout << PINK << "Before inserting pairs from pend to main:" << std::endl;
-	// displayMain();
-	// displayPend();
-	// displayRest();
-	// std::cout << YELLOW << "==================================" << RESET << std::endl;
-	// for (std::vector<Pair>::const_iterator it = _pend.begin(); it != _pend.end(); ++it)
-	// {
-	// 	insert_pair(_main, *it, _pend.size());
-	// }
-	// _pend.clear();
-	// std::cout << PINK << "After inserting pairs from pend to main:" << std::endl;
-	// displayMain();
-	// displayPend();
-	// displayRest();
-	// std::cout << YELLOW << "==================================" << RESET << std::endl;
-	// std::cout << YELLOW << "==================================" << RESET << std::endl;
 
 	size_t previousLimit = 1;
-
+	int jcb_start = 3;
+#ifdef DEBUG
 	std::cout << PINK << "Before inserting pairs from pend to main:" << std::endl;
 	displayMain();
 	displayPend();
 	displayRest();
 	std::cout << YELLOW << "==================================" << RESET << std::endl;
+#endif
 
 	while (previousLimit < _pend.size())
 	{
@@ -239,27 +281,33 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 #endif
 		for (size_t i = end; i > previousLimit; i--)
 		{
-			insert_pair(_main, _pend[i - 1], currentLimit); // i-1 car indices 0-based
-			_pend.erase(_pend.begin() + i - 1);
+			// Trouve la position du partenaire dans main pour limiter la recherche
+			size_t partner_pos = find_partner_position(_pend[i - 1]);
+			insert_pair(_main, _pend[i - 1], partner_pos);
 		}
+
+		// Supprime les éléments insérés APRÈS la boucle
+		_pend.erase(_pend.begin() + previousLimit, _pend.begin() + end);
 		previousLimit = currentLimit;
 		jcb_start++;
 	}
+#ifdef DEBUG
+
 	std::cout << PINK << "After inserting pairs from pend to main:" << std::endl;
 	displayMain();
 	displayPend();
 	displayRest();
 	std::cout << YELLOW << "==================================" << RESET << std::endl;
-
-	std::cout << PINK << "Final state of main and pend:" << std::endl;
+#endif
 	if (!_pend.empty())
 	{
 		std::vector<Pair>::const_iterator it = _pend.begin();
 		insert_pair(_main, *it, _main.size());
 	}
-	_pend.clear();
 
+	_pend.clear();
 	_numbers.clear();
+
 	for (std::vector<Pair>::const_iterator it = _main.begin(); it != _main.end(); ++it)
 		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
 			_numbers.push_back(*vec_it);
@@ -271,10 +319,11 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		pairSize /= 2;
 	else
 		pairSize = 0;
+#ifdef DEBUG
+	std::cout << PINK << "Final state of main and pend:" << std::endl;
 	displayNumbers();
-	std::cout << std::endl;
-	std::cout << std::endl;
-	std::cout << std::endl;
+#endif
+
 	makePairs(pairs, pairSize);
 	recursivePairs(pairs, pairSize);
 }
@@ -284,6 +333,19 @@ void Pmerge::insert_pair(std::vector<Pair> &main, const Pair &element, int searc
 	std::vector<Pair>::iterator it = std::lower_bound(main.begin(), main.begin() + search_limit,
 													  element, compare_pairs);
 	main.insert(it, element);
+}
+
+size_t Pmerge::find_partner_position(const Pair &pend_element)
+{
+	// Cherche l'élément avec le même index mais de type B (dans main)
+	for (size_t i = 0; i < _main.size(); i++)
+	{
+		if (_main[i].index == pend_element.index && _main[i].pair_type == B)
+		{
+			return i + 1; // Position pour la recherche (i+1 car on peut insérer jusqu'à cette position incluse)
+		}
+	}
+	return _main.size(); // Si pas trouvé, cherche dans tout main
 }
 
 bool Pmerge::compare_pairs(const Pair &a, const Pair &b)
@@ -389,6 +451,11 @@ void Pmerge::displayPair(const std::vector<Pair> &pairs) const
 		std::cout << RESET;
 	}
 	std::cout << std::endl;
+}
+
+std::vector<int> Pmerge::getNumbers() const
+{
+	return _numbers;
 }
 
 /* ************************************************************************** */
