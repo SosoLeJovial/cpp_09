@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 14:41:26 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/21 16:10:13 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/23 21:38:39 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,6 @@ bool Pmerge::isValidInt(const std::string &str) const
 
 void Pmerge::sort()
 {
-	displayNumbers();
-	std::cout << PINK << "Number to start: " << _numbers.size() << RESET << std::endl;
-
 	std::vector<Pair> pairs;
 	int stragglers = -1;
 
@@ -111,11 +108,20 @@ void Pmerge::sort()
 	size_t pairSize = createPairs();
 	makePairs(pairs, pairSize);
 
-// Display the initial state of the numbers and pairs
+	// Display the initial state of the numbers and pairs
+
+	recursivePairs(pairs, pairSize / 2);
+	if (stragglers != -1)
+	{
+		std::cout << YELLOW << "Stragglers: " << stragglers << RESET << std::endl;
+		std::vector<int> stragglers_vector;
+		stragglers_vector.push_back(stragglers);
+		std::vector<int>::iterator it = std::lower_bound(_numbers.begin(), _numbers.end(), stragglers);
+		_numbers.insert(it, stragglers_vector.begin(), stragglers_vector.end());
+	}
 #ifdef DEBUG
 	displayNumbers();
 #endif
-	recursivePairs(pairs, pairSize / 2);
 }
 
 size_t Pmerge::createPairs()
@@ -165,11 +171,12 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 {
 	if (pairSize < 1)
 		return;
+	std::cout << YELLOW << "=== INSERT USING BINARY INSERT ===" << RESET << std::endl;
+	displayNumbers();
 	_main.clear();
 	_pend.clear();
 	_rest.clear();
 
-	// push the rest in rest container
 	size_t restIndex = _numbers.size() % pairSize;
 	size_t sizeNumbers = _numbers.size();
 	for (size_t i = sizeNumbers - 1; i >= sizeNumbers - restIndex; i--)
@@ -177,9 +184,11 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		_rest.push_back(_numbers[i]);
 		_numbers.pop_back();
 	}
-#ifdef DEBUG
+
+	std::cout << PINK << "Rest numbers: ";
 	displayRest();
-#endif
+	std::cout << YELLOW << "==================================" << RESET << std::endl;
+
 	// push all b1 b2 b3 b4 ect in pend and an in main
 	for (std::vector<Pair>::const_iterator it = pairs.begin(); it != pairs.end(); ++it)
 	{
@@ -193,46 +202,75 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		else
 			_main.push_back(*it);
 	}
-#ifdef DEBUG
+	// std::cout << PINK << "Before inserting pairs from pend to main:" << std::endl;
+	// displayMain();
+	// displayPend();
+	// displayRest();
+	// std::cout << YELLOW << "==================================" << RESET << std::endl;
+	// for (std::vector<Pair>::const_iterator it = _pend.begin(); it != _pend.end(); ++it)
+	// {
+	// 	insert_pair(_main, *it, _pend.size());
+	// }
+	// _pend.clear();
+	// std::cout << PINK << "After inserting pairs from pend to main:" << std::endl;
+	// displayMain();
+	// displayPend();
+	// displayRest();
+	// std::cout << YELLOW << "==================================" << RESET << std::endl;
+	// std::cout << YELLOW << "==================================" << RESET << std::endl;
+
+	size_t previousLimit = 1;
+
+	std::cout << PINK << "Before inserting pairs from pend to main:" << std::endl;
 	displayMain();
 	displayPend();
-#endif
+	displayRest();
+	std::cout << YELLOW << "==================================" << RESET << std::endl;
 
-	// insert with Jacob-Stahl sequence
-
-	size_t currentLimit = 1;
-	while (currentLimit < _pend.size())
+	while (previousLimit < _pend.size())
 	{
-		currentLimit = jacobstahl_numbers(jcb_start);
-		std::cout << GREEN << "Current limit: " << currentLimit << RESET << std::endl;
+		size_t currentLimit = jacobstahl_numbers(jcb_start);
 		size_t end = (currentLimit < _pend.size()) ? currentLimit : _pend.size();
-		for (size_t i = currentLimit; i < end; i--)
+
+#ifdef DEBUG
+		displayMain();
+		displayPend();
+		displayRest();
+#endif
+		for (size_t i = end; i > previousLimit; i--)
 		{
-			insert_pair(_main, _pend[i], currentLimit);
-			_pend.erase(_pend.begin() + i);
+			insert_pair(_main, _pend[i - 1], currentLimit); // i-1 car indices 0-based
+			_pend.erase(_pend.begin() + i - 1);
 		}
 
+		previousLimit = currentLimit;
 		jcb_start++;
 	}
+	std::cout << PINK << "After inserting pairs from pend to main:" << std::endl;
+	displayMain();
+	displayPend();
+	displayRest();
+	std::cout << YELLOW << "==================================" << RESET << std::endl;
 
-	for (std::vector<Pair>::const_iterator it = _pend.begin(); it != _pend.end(); ++it)
+	for (std::vector<Pair>::const_iterator it = _pend.begin(); it != _pend.end(); it++)
 		_main.push_back(*it);
 
-	// push all in numbers and repeat
 	_numbers.clear();
 	for (std::vector<Pair>::const_iterator it = _main.begin(); it != _main.end(); ++it)
-	{
 		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
 			_numbers.push_back(*vec_it);
-	}
 
-	for (std::vector<int>::const_iterator it = _rest.begin(); it != _rest.end(); ++it)
+	for (std::vector<int>::const_iterator it = _rest.end(); it != _rest.begin(); --it)
 		_numbers.push_back(*it);
-	displayNumbers();
+
 	if (pairSize > 1)
 		pairSize /= 2;
 	else
 		pairSize = 0;
+	displayNumbers();
+	std::cout << std::endl;
+	std::cout << std::endl;
+	std::cout << std::endl;
 	makePairs(pairs, pairSize);
 	recursivePairs(pairs, pairSize);
 }
@@ -246,11 +284,7 @@ void Pmerge::insert_pair(std::vector<Pair> &main, const Pair &element, int searc
 
 bool Pmerge::compare_pairs(const Pair &a, const Pair &b)
 {
-	if (a.pair[0] == b.pair[0])
-		return a.index < b.index;
-	if (a.pair.empty() || b.pair.empty())
-		return a.pair[0] < b.pair[0];
-	return false;
+	return a.pair.back() < b.pair.back();
 }
 
 int Pmerge::jacobstahl_numbers(int n)
@@ -287,10 +321,13 @@ void Pmerge::displayNumbers() const
 void Pmerge::displayRest() const
 {
 	std::cout << CYAN << "Rest numbers: ";
-	for (std::vector<int>::const_iterator it = _rest.begin(); it != _rest.end(); ++it)
+	if (_rest.empty())
 	{
-		std::cout << BLUE << *it << " ";
+		std::cout << CYAN << "None" << RESET << std::endl;
+		return;
 	}
+	for (std::vector<int>::const_iterator it = _rest.begin(); it != _rest.end(); ++it)
+		std::cout << RESET << *it << " ";
 	std::cout << RESET << std::endl;
 }
 
@@ -305,12 +342,11 @@ void Pmerge::displayMain() const
 	std::cout << CYAN << "Main numbers: ";
 	for (std::vector<Pair>::const_iterator it = _main.begin(); it != _main.end(); ++it)
 	{
-		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << it->index << " " << BLUE;
+		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << it->index << " " << RESET;
 		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
-		{
 			std::cout << *vec_it << " ";
-		}
-		std::cout << YELLOW << " | ";
+		if (it != _main.end() - 1)
+			std::cout << YELLOW << " | ";
 		std::cout << RESET;
 	}
 	std::cout << std::endl;
@@ -326,12 +362,11 @@ void Pmerge::displayPend() const
 	std::cout << CYAN << "Pend numbers: ";
 	for (std::vector<Pair>::const_iterator it = _pend.begin(); it != _pend.end(); ++it)
 	{
-		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << it->index << " " << BLUE;
+		if (it != _pend.begin())
+			std::cout << YELLOW << " | " << RESET;
+		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << it->index << " " << RESET;
 		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
-		{
 			std::cout << *vec_it << " ";
-		}
-		std::cout << YELLOW << " | ";
 		std::cout << RESET;
 	}
 	std::cout << std::endl;
@@ -342,12 +377,11 @@ void Pmerge::displayPair(const std::vector<Pair> &pairs) const
 	std::vector<Pair>::const_iterator it = pairs.begin();
 	for (; it != pairs.end(); ++it)
 	{
-		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << it->index << " " << BLUE;
+		if (it != pairs.begin())
+			std::cout << YELLOW << " | " << RESET;
+		std::cout << MAGENTA << (it->pair_type == A ? "A" : "B") << it->index << " " << RESET;
 		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
-		{
 			std::cout << *vec_it << " ";
-		}
-		std::cout << YELLOW << " | ";
 		std::cout << RESET;
 	}
 	std::cout << std::endl;
