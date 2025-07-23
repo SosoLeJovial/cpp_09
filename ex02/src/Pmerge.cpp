@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 14:41:26 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/23 21:38:39 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/23 22:27:57 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,7 +242,6 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 			insert_pair(_main, _pend[i - 1], currentLimit); // i-1 car indices 0-based
 			_pend.erase(_pend.begin() + i - 1);
 		}
-
 		previousLimit = currentLimit;
 		jcb_start++;
 	}
@@ -252,8 +251,13 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 	displayRest();
 	std::cout << YELLOW << "==================================" << RESET << std::endl;
 
-	for (std::vector<Pair>::const_iterator it = _pend.begin(); it != _pend.end(); it++)
-		_main.push_back(*it);
+	std::cout << PINK << "Final state of main and pend:" << std::endl;
+	if (!_pend.empty())
+	{
+		std::vector<Pair>::const_iterator it = _pend.begin();
+		insert_pair(_main, *it, _main.size());
+	}
+	_pend.clear();
 
 	_numbers.clear();
 	for (std::vector<Pair>::const_iterator it = _main.begin(); it != _main.end(); ++it)
