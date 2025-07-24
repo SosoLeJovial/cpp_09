@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 09:58:51 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/24 00:13:57 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/24 16:40:14 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ int main(int ac, char **av)
 		std::cout << YELLOW << "=== SORTING WITH VECTOR ===" << RESET << std::endl;
 		Pmerge pmerge_vector(ac, av);
 		pmerge_vector.sort();
-		pmerge_vector.displayNumbers();
 		if (pmerge_vector.is_sort(pmerge_vector.getNumbers()))
 		{
 			std::cout << GREEN << "The numbers are sorted correctly." << RESET << std::endl;

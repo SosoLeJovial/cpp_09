@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 14:41:26 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/24 00:23:58 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/24 17:01:03 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,6 @@ void Pmerge::sort()
 		std::vector<int>::iterator it = std::lower_bound(_numbers.begin(), _numbers.end(), stragglers);
 		_numbers.insert(it, stragglers_vector.begin(), stragglers_vector.end());
 	}
-	displayNumbers();
 }
 
 size_t Pmerge::createPairs()
@@ -240,9 +239,6 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		_numbers.pop_back();
 	}
 #ifdef DEBUG
-	std::cout << PINK << "Rest numbers: ";
-	displayNumbers();
-	displayRest();
 	std::cout << YELLOW << "==================================" << RESET << std::endl;
 #endif
 
@@ -259,8 +255,6 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 			_main.push_back(*it);
 	}
 
-	size_t previousLimit = 1;
-	int jcb_start = 3;
 #ifdef DEBUG
 	std::cout << PINK << "Before inserting pairs from pend to main:" << std::endl;
 	displayMain();
@@ -269,6 +263,8 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 	std::cout << YELLOW << "==================================" << RESET << std::endl;
 #endif
 
+	size_t previousLimit = 1;
+	int jcb_start = 3;
 	while (previousLimit < _pend.size())
 	{
 		size_t currentLimit = jacobstahl_numbers(jcb_start);
@@ -312,7 +308,7 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 		for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
 			_numbers.push_back(*vec_it);
 
-	for (std::vector<int>::const_iterator it = _rest.end(); it != _rest.begin(); --it)
+	for (std::vector<int>::reverse_iterator it = _rest.rbegin(); it != _rest.rend(); ++it)
 		_numbers.push_back(*it);
 
 	if (pairSize > 1)
@@ -320,7 +316,7 @@ void Pmerge::recursivePairs(std::vector<Pair> &pairs, size_t pairSize)
 	else
 		pairSize = 0;
 #ifdef DEBUG
-	std::cout << PINK << "Final state of main and pend:" << std::endl;
+	std::cout << PINK << "Final state of numbers:" << std::endl;
 	displayNumbers();
 #endif
 
@@ -337,15 +333,12 @@ void Pmerge::insert_pair(std::vector<Pair> &main, const Pair &element, int searc
 
 size_t Pmerge::find_partner_position(const Pair &pend_element)
 {
-	// Cherche l'élément avec le même index mais de type B (dans main)
 	for (size_t i = 0; i < _main.size(); i++)
 	{
 		if (_main[i].index == pend_element.index && _main[i].pair_type == B)
-		{
-			return i + 1; // Position pour la recherche (i+1 car on peut insérer jusqu'à cette position incluse)
-		}
+			return i + 1;
 	}
-	return _main.size(); // Si pas trouvé, cherche dans tout main
+	return _main.size();
 }
 
 bool Pmerge::compare_pairs(const Pair &a, const Pair &b)
