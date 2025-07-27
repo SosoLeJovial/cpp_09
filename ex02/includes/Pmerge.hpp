@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/24 19:43:38 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/27 15:19:02 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ public:
 		for (size_t i = 0; i < all_numbers.size(); i++)
 			_numbers.push_back(all_numbers[i]);
 		jcb_start = 3;
+		std::cout << GREEN << "Before: " << RESET;
+		displayNumbers();
 	}
 
 	Pmerge(const Pmerge &src)
@@ -184,27 +186,28 @@ public:
 			throw std::invalid_argument("Invalid number: already sorted");
 		}
 
-#ifdef DEBUG
-		displayNumbers();
-#endif
-
 		if (_numbers.size() % 2 != 0)
 		{
 			stragglers = _numbers.back();
 			_numbers.pop_back();
 		}
 
-#ifdef DEBUG
-		std::cout << YELLOW << "=== MAKING PAIRS ===" << RESET << std::endl;
-#endif
-
+		
+		
 		size_t pairSize = createPairs();
 		makePairs(pairs, pairSize);
-
+		
 #ifdef DEBUG
+		std::cout << YELLOW << "=== STEPS 1: MAKING PAIRS AND HANDLE STRAGGLER ===" << RESET << std::endl;
+		std::cout << YELLOW << "=== STEPS 2: SORT PAIRS ===" << RESET << std::endl;
 		displayPair(pairs);
-		std::cout << std::endl;
-		std::cout << YELLOW << "=== RECURSIVE PAIRS ===" << RESET << std::endl;
+		if (stragglers != -1)
+			std::cout << "Straggler store: " << stragglers << std::endl;
+		else
+			std::cout << "Straggler store: " << "none" << std::endl;
+		std::cout << YELLOW << "=== STEP 3: RECURSIVE PAIRS ===" << RESET << std::endl;
+		std::cout << YELLOW << "=== STEP 3: RECURSIVE PAIRS ===" << RESET << std::endl;
+		std::cout << YELLOW << "=== STEP 3: RECURSIVE PAIRS ===" << RESET << std::endl;
 #endif
 
 		recursivePairs(pairs, pairSize / 2);
@@ -215,6 +218,7 @@ public:
 			typename Container::iterator it = std::lower_bound(_numbers.begin(), _numbers.end(), stragglers);
 			_numbers.insert(it, stragglers_vector.begin(), stragglers_vector.end());
 		}
+		std::cout << GREEN << "After: " << RESET;
 		displayNumbers();
 	}
 
@@ -235,6 +239,8 @@ public:
 			pairSize *= 2;
 			levels++;
 		}
+		if (size == 2)
+			return 2;
 		return pairSize / 2;
 	}
 
@@ -252,7 +258,7 @@ public:
 
 			size_t pair_number = i / pairSize;
 			type pair_side = pair_number % 2 ? B : A;
-				size_t index = pair_number / 2 + 1;
+			size_t index = pair_number / 2 + 1;
 
 			std::vector<int> numbers(_numbers.begin() + i, _numbers.begin() + i + pairSize);
 			Pair new_pair = {index, pair_side, numbers};
@@ -276,9 +282,6 @@ public:
 			_rest.push_back(_numbers[i]);
 			_numbers.pop_back();
 		}
-#ifdef DEBUG
-		std::cout << YELLOW << "==================================" << RESET << std::endl;
-#endif
 
 		for (std::vector<Pair>::const_iterator it = pairs.begin(); it != pairs.end(); ++it)
 		{
@@ -293,50 +296,30 @@ public:
 				_main.push_back(*it);
 		}
 
-#ifdef DEBUG
-		std::cout << PINK << "Before inserting pairs from pend to main:" << std::endl;
-		displayMain();
-		displayPend();
-		displayRest();
-		std::cout << YELLOW << "==================================" << RESET << std::endl;
-#endif
-
 		size_t previousLimit = 1;
 		int jcb_start = 3;
 		while (previousLimit < _pend.size())
 		{
 			size_t currentLimit = jacobstahl_numbers(jcb_start);
 			size_t end = (currentLimit < _pend.size()) ? currentLimit : _pend.size();
-
-#ifdef DEBUG
-			displayMain();
-			displayPend();
-			displayRest();
-#endif
 			for (size_t i = end; i > previousLimit; i--)
 			{
-				// Trouve la position du partenaire dans main pour limiter la recherche
 				size_t partner_pos = find_partner_position(_pend[i - 1]);
 				insert_pair(_main, _pend[i - 1], partner_pos);
 			}
 
-			// Supprime les éléments insérés APRÈS la boucle
 			_pend.erase(_pend.begin() + previousLimit, _pend.begin() + end);
 			previousLimit = currentLimit;
 			jcb_start++;
 		}
-#ifdef DEBUG
 
-		std::cout << PINK << "After inserting pairs from pend to main:" << std::endl;
-		displayMain();
-		displayPend();
-		displayRest();
-		std::cout << YELLOW << "==================================" << RESET << std::endl;
-#endif
 		if (!_pend.empty())
 		{
-			std::vector<Pair>::const_iterator it = _pend.begin();
-			insert_pair(_main, *it, _main.size());
+			for (std::vector<Pair>::const_iterator it = _pend.begin(); it != _pend.end(); ++it)
+			{
+				size_t partner_pos = find_partner_position(*it);
+				insert_pair(_main, *it, partner_pos);
+			}
 		}
 
 		_pend.clear();
@@ -353,10 +336,6 @@ public:
 			pairSize /= 2;
 		else
 			pairSize = 0;
-#ifdef DEBUG
-		std::cout << PINK << "Final state of numbers:" << std::endl;
-		displayNumbers();
-#endif
 
 		makePairs(pairs, pairSize);
 		recursivePairs(pairs, pairSize);
