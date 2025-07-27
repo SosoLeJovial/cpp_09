@@ -6,7 +6,7 @@
 #    By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/06 00:15:05 by tsofien-          #+#    #+#              #
-#    Updated: 2025/07/21 10:39:23 by tsofien-         ###   ########.fr        #
+#    Updated: 2025/07/24 19:20:07 by tsofien-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,7 +37,7 @@ SRCS_PATH		= src
 INCLUDE_PATH	= includes/
 
 
-MAIN			= main.cpp Pmerge.cpp
+MAIN			= main.cpp
 
 ################################################################################
 #                                  Makefile  objs                              #

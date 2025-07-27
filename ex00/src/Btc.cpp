@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 17:48:48 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/05/31 00:31:42 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/27 09:26:05 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,8 +269,6 @@ float Btc::getBitcoinPrice(const std::string &date)
 	std::map<std::string, float>::iterator it = this->dataCsv.lower_bound(date);
 
 	if (it != this->dataCsv.end())
-	{
 		return it->second;
-	}
 	return -1;
 }
