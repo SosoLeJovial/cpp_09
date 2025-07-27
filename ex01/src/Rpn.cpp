@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 00:20:03 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/06/01 16:33:32 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/27 10:25:36 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,12 @@
 
 Rpn::Rpn() {}
 
-Rpn::Rpn(const Rpn &other) : _stack(other._stack) {}
+Rpn::Rpn(const Rpn &src) : _stack(src._stack) {}
 
-Rpn &Rpn::operator=(const Rpn &other)
+Rpn &Rpn::operator=(const Rpn &rhs)
 {
-	if (this != &other)
-	{
-		_stack = other._stack;
-	}
+	if (this != &rhs)
+		_stack = rhs._stack;
 	return *this;
 }
 
@@ -108,6 +106,7 @@ int Rpn::calculate(const std::string &expression)
 
 	std::istringstream iss(expression);
 	std::string token;
+
 
 	while (iss >> token)
 	{

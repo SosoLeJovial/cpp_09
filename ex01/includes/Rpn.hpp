@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/22 00:15:03 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/06/01 16:31:55 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/27 10:18:18 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #define RPN_HPP
 
 #include <stack>
+#include <iostream>
+#include "utils.hpp"
 #include <string>
 #include <stdexcept>
 
@@ -26,11 +28,11 @@ private:
 	bool isDigit(char c) const;
 	void performOperation(char op);
 	bool checkOverflow(int a, int b, char op);
-
-public:
+	
+	public:
 	Rpn();
-	Rpn(const Rpn &other);
-	Rpn &operator=(const Rpn &other);
+	Rpn(const Rpn &src);
+	Rpn &operator=(const Rpn &rhs);
 	~Rpn();
 
 	int calculate(const std::string &expression);
