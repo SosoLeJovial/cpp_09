@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/27 15:19:02 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/29 20:17:54 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ public:
 		}
 		for (size_t i = 0; i < all_numbers.size(); i++)
 			_numbers.push_back(all_numbers[i]);
-		jcb_start = 3;
 		std::cout << GREEN << "Before: " << RESET;
 		displayNumbers();
 	}
@@ -206,11 +205,11 @@ public:
 		else
 			std::cout << "Straggler store: " << "none" << std::endl;
 		std::cout << YELLOW << "=== STEP 3: RECURSIVE PAIRS ===" << RESET << std::endl;
-		std::cout << YELLOW << "=== STEP 3: RECURSIVE PAIRS ===" << RESET << std::endl;
-		std::cout << YELLOW << "=== STEP 3: RECURSIVE PAIRS ===" << RESET << std::endl;
+		// std::cout << YELLOW << "=== STEP 3: RECURSIVE PAIRS ===" << RESET << std::endl;
+		// std::cout << YELLOW << "=== STEP 3: RECURSIVE PAIRS ===" << RESET << std::endl;
 #endif
 
-		recursivePairs(pairs, pairSize / 2);
+		recursivePairs(pairs, pairSize);
 		if (stragglers != -1)
 		{
 			Container stragglers_vector;
@@ -228,13 +227,13 @@ public:
 		size_t pairSize = 2;
 		size_t levels = 0;
 
-		while (pairSize < size)
+		while (pairSize <= size)
 		{
 			for (size_t j = (pairSize / 2) - 1; j + (pairSize / 2) < size; j += pairSize)
 			{
 				if (j < size && j + (pairSize / 2) < size && _numbers[j] > _numbers[j + (pairSize / 2)])
-					for (size_t k = j - (pairSize / 2) + 1; k <= j; k++)
-						std::swap(_numbers[k], _numbers[k + (pairSize / 2)]);
+				for (size_t k = j - (pairSize / 2) + 1; k <= j; k++)
+				std::swap(_numbers[k], _numbers[k + (pairSize / 2)]);
 			}
 			pairSize *= 2;
 			levels++;
@@ -243,6 +242,8 @@ public:
 			return 2;
 		return pairSize / 2;
 	}
+
+
 
 	void makePairs(std::vector<Pair> &pairs, size_t pairSize)
 	{
@@ -277,7 +278,7 @@ public:
 
 		size_t restIndex = _numbers.size() % pairSize;
 		size_t sizeNumbers = _numbers.size();
-		for (size_t i = sizeNumbers - 1; i >= sizeNumbers - restIndex; i--)
+		for (int i = sizeNumbers - 1; i >= (int)(sizeNumbers - restIndex); i--)
 		{
 			_rest.push_back(_numbers[i]);
 			_numbers.pop_back();
@@ -295,6 +296,13 @@ public:
 			else
 				_main.push_back(*it);
 		}
+
+		#ifdef DEBUG
+		std::cout << YELLOW << "=== STEP 4: SORT IN PEND AND MAIN ===" << RESET << std::endl;
+		displayNumbers();
+		displayMain();
+		displayPend();
+		#endif
 
 		size_t previousLimit = 1;
 		int jcb_start = 3;
@@ -321,9 +329,15 @@ public:
 				insert_pair(_main, *it, partner_pos);
 			}
 		}
-
+		
 		_pend.clear();
 		_numbers.clear();
+		#ifdef DEBUG
+			std::cout << YELLOW << "=== STEP 5: SORT IN MAIN ===" << RESET << std::endl;
+			displayMain();
+			displayPend();
+			displayRest();
+		#endif
 
 		for (std::vector<Pair>::const_iterator it = _main.begin(); it != _main.end(); ++it)
 			for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
@@ -331,6 +345,7 @@ public:
 
 		for (typename Container::reverse_iterator it = _rest.rbegin(); it != _rest.rend(); ++it)
 			_numbers.push_back(*it);
+		
 
 		if (pairSize > 1)
 			pairSize /= 2;
@@ -463,7 +478,7 @@ public:
 		std::cout << std::endl;
 	}
 
-	std::vector<int> getNumbers() const
+	Container getNumbers() const
 	{
 		return _numbers;
 	}

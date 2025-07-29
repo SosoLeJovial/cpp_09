@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 09:58:51 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/27 15:01:23 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/29 20:10:53 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,32 @@ int main(int ac, char **av)
 			std::cerr << RED << "size expect: " << ac - 1 << " but got: " << numbers.size() << RESET << std::endl;
 			return 1;
 		}
+	}
+	catch (const std::exception &e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+
+	try
+	{
+		std::cout << YELLOW << "=== SORTING WITH DEQUE ===" << RESET << std::endl;
+		Pmerge<std::deque<int> > pmerge_deque(ac, av);
+		pmerge_deque.sort();
+		std::deque<int> deque_numbers = pmerge_deque.getNumbers(); 
+		if (pmerge_deque.is_sort(deque_numbers))
+			std::cout << GREEN << "The numbers are sorted correctly." << RESET << std::endl;
+		else
+		{
+			std::cerr << RED << "Error: The numbers are not sorted correctly." << RESET << std::endl;
+			return 1;
+		}
+		if (deque_numbers.size() == static_cast<size_t>(ac - 1))
+		std::cout << GREEN << "size expect: " << ac - 1 << " but got: " << deque_numbers.size() << RESET << std::endl;
+		else
+		{
+			std::cerr << RED << "size expect: " << ac - 1 << " but got: " << deque_numbers.size() << RESET << std::endl;
+			return 1;
+		}
 
 		std::cout << std::endl;
 	}
@@ -49,17 +75,5 @@ int main(int ac, char **av)
 	{
 		std::cerr << e.what() << '\n';
 	}
-
-	// try
-	// {
-	// 	std::cout << YELLOW << "=== SORTING WITH DEQUE ===" << RESET << std::endl;
-	// 	Pmerge<std::deque<int> > pmerge_deque(ac, av);
-	// 	pmerge_deque.sort();
-	// 	std::cout << std::endl;
-	// }
-	// catch (const std::exception &e)
-	// {
-	// 	std::cerr << e.what() << '\n';
-	// }
 	return 0;
 }
