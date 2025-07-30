@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/29 20:17:54 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/30 12:31:31 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define PMERGE_HPP
 
 #include <string>
+#include <sys/time.h>
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -31,6 +32,21 @@ enum type
 	B = 1
 };
 
+template<typename Container>
+struct ContainerTraits {
+    static std::string name() { return "Container"; }
+};
+
+template<typename T>
+struct ContainerTraits<std::vector<T> > {
+    static std::string name() { return "vector"; }
+};
+
+template<typename T>
+struct ContainerTraits<std::deque<T> > {
+    static std::string name() { return "deque"; }
+};
+
 struct Pair
 {
 	size_t index;
@@ -42,6 +58,7 @@ template <typename Container>
 class Pmerge
 {
 private:
+	struct timeval start, end;
 	int jcb_start;
 	Container _numbers;
 	std::vector<Pair> _main;
@@ -170,6 +187,7 @@ public:
 
 	void sort()
 	{
+		gettimeofday(&start, NULL);
 		std::vector<Pair> pairs;
 		int stragglers = -1;
 
@@ -219,6 +237,9 @@ public:
 		}
 		std::cout << GREEN << "After: " << RESET;
 		displayNumbers();
+		gettimeofday(&end, NULL);
+		long microsecondes = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
+		std::cout << "Time to process a range of " << _numbers.size() << " with std::"<< ContainerTraits<Container>::name()  << ": " << microsecondes << " µs" << std::endl;
 	}
 
 	size_t createPairs()

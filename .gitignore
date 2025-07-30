@@ -7,6 +7,8 @@
 # Executables
 a.out
 PmergeMe
+btc
+rpn
 *.out
 *.exe
 *.o
