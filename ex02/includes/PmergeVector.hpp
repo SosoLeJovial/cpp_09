@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Pmerge.hpp                                         :+:      :+:    :+:   */
+/*   PmergeVector.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/30 12:31:31 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/07/30 14:28:29 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PMERGE_HPP
-#define PMERGE_HPP
+#ifndef PMERGEVECTOR_HPP
+#define PMERGEVECTOR_HPP
 
 #include <string>
 #include <sys/time.h>
@@ -20,7 +20,6 @@
 #include <iterator>
 #include <numeric>
 #include <vector>
-#include <deque>
 #include <stdexcept>
 #include <limits>
 #include <cerrno>
@@ -32,21 +31,6 @@ enum type
 	B = 1
 };
 
-template<typename Container>
-struct ContainerTraits {
-    static std::string name() { return "Container"; }
-};
-
-template<typename T>
-struct ContainerTraits<std::vector<T> > {
-    static std::string name() { return "vector"; }
-};
-
-template<typename T>
-struct ContainerTraits<std::deque<T> > {
-    static std::string name() { return "deque"; }
-};
-
 struct Pair
 {
 	size_t index;
@@ -54,24 +38,23 @@ struct Pair
 	std::vector<int> pair;
 };
 
-template <typename Container>
-class Pmerge
+class PmergeVector
 {
 private:
 	struct timeval start, end;
 	int jcb_start;
-	Container _numbers;
+	std::vector<int> _numbers;
 	std::vector<Pair> _main;
-	Container _rest;
+	std::vector<int> _rest;
 	std::vector<Pair> _pend;
 
-	Pmerge(/* args */);
+	PmergeVector(/* args */);
 
 public:
 	// ========================================================================
 	// CONSTRUCTORS AND DESTRUCTOR
 	// ========================================================================
-	Pmerge(int ac, char **av)
+	PmergeVector(int ac, char **av)
 	{
 		if (ac < 2)
 		{
@@ -94,7 +77,7 @@ public:
 		displayNumbers();
 	}
 
-	Pmerge(const Pmerge &src)
+	PmergeVector(const PmergeVector &src)
 	{
 		if (this != &src)
 		{
@@ -106,7 +89,7 @@ public:
 		}
 	}
 
-	Pmerge &operator=(const Pmerge &rhs)
+	PmergeVector &operator=(const PmergeVector &rhs)
 	{
 		if (this != &rhs)
 		{
@@ -119,7 +102,7 @@ public:
 		return *this;
 	}
 
-	~Pmerge() {};
+	~PmergeVector() {};
 	// ========================================================================
 	// PARSING AND VALIDATION FUNCTIONS
 	// ========================================================================
@@ -158,9 +141,9 @@ public:
 				val <= std::numeric_limits<int>::max());
 	}
 
-	bool has_duplicates(const Container &vec)
+	bool has_duplicates(const std::vector<int> &vec)
 	{
-		Container seen;
+		std::vector<int> seen;
 		for (size_t i = 0; i < vec.size(); i++)
 		{
 			if (std::find(seen.begin(), seen.end(), vec[i]) != seen.end())
@@ -170,10 +153,10 @@ public:
 		return false;
 	}
 
-	bool is_sort(Container &vec)
+	bool is_sort(std::vector<int> &vec)
 	{
 
-		for (typename Container::const_iterator it = vec.begin(); it != vec.end(); ++it)
+		for (std::vector<int>::const_iterator it = vec.begin(); it != vec.end(); ++it)
 		{
 			if (it + 1 != vec.end() && *it > *(it + 1))
 				return false;
@@ -230,16 +213,16 @@ public:
 		recursivePairs(pairs, pairSize);
 		if (stragglers != -1)
 		{
-			Container stragglers_vector;
+			std::vector<int> stragglers_vector;
 			stragglers_vector.push_back(stragglers);
-			typename Container::iterator it = std::lower_bound(_numbers.begin(), _numbers.end(), stragglers);
+			std::vector<int>::iterator it = std::lower_bound(_numbers.begin(), _numbers.end(), stragglers);
 			_numbers.insert(it, stragglers_vector.begin(), stragglers_vector.end());
 		}
 		std::cout << GREEN << "After: " << RESET;
 		displayNumbers();
 		gettimeofday(&end, NULL);
 		long microsecondes = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
-		std::cout << "Time to process a range of " << _numbers.size() << " with std::"<< ContainerTraits<Container>::name()  << ": " << microsecondes << " µs" << std::endl;
+		std::cout << PINK << "Time to process a range of " << _numbers.size() << " with std::vector container: " << microsecondes << " µs" << RESET << std::endl;
 	}
 
 	size_t createPairs()
@@ -364,7 +347,7 @@ public:
 			for (std::vector<int>::const_iterator vec_it = it->pair.begin(); vec_it != it->pair.end(); ++vec_it)
 				_numbers.push_back(*vec_it);
 
-		for (typename Container::reverse_iterator it = _rest.rbegin(); it != _rest.rend(); ++it)
+		for (std::vector<int>::reverse_iterator it = _rest.rbegin(); it != _rest.rend(); ++it)
 			_numbers.push_back(*it);
 		
 
@@ -423,7 +406,7 @@ public:
 	void displayNumbers() const
 	{
 		std::cout << YELLOW << "Display numbers: ";
-		for (typename Container::const_iterator it = _numbers.begin(); it != _numbers.end(); ++it)
+		for (std::vector<int>::const_iterator it = _numbers.begin(); it != _numbers.end(); ++it)
 		{
 			std::cout << BLUE << *it << " ";
 		}
@@ -438,7 +421,7 @@ public:
 			std::cout << CYAN << "None" << RESET << std::endl;
 			return;
 		}
-		for (typename Container::const_iterator it = _rest.begin(); it != _rest.end(); ++it)
+		for (std::vector<int>::const_iterator it = _rest.begin(); it != _rest.end(); ++it)
 			std::cout << RESET << *it << " ";
 		std::cout << RESET << std::endl;
 	}
@@ -499,7 +482,7 @@ public:
 		std::cout << std::endl;
 	}
 
-	Container getNumbers() const
+	std::vector<int> getNumbers() const
 	{
 		return _numbers;
 	}
