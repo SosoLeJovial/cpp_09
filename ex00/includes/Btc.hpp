@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 17:48:59 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/05/31 00:22:23 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/08/02 23:06:35 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <climits>
 #include <limits>
+#include <sstream>
 #include <iomanip>
 
 class Btc
@@ -51,6 +52,7 @@ public:
 	bool validValue(const std::string &value);
 	float getBitcoinPrice(const std::string &date);
 	void printData() const;
+	bool Btc::fileEmpty(const std::string inputFile);
 };
 
 #endif

@@ -6,22 +6,16 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 17:48:48 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/27 09:26:05 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/08/02 23:40:35 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Btc.hpp"
-#include <sstream>
 
 /* ************************************************************************** */
 /*                           CONSTRUCTORS & DESTRUCTOR                       */
 /* ************************************************************************** */
 
-/**
- * @brief Constructor that loads Bitcoin data from CSV file and processes input file
- * @param fileData Path to the CSV file containing Bitcoin exchange rates
- * @param input Path to the input file containing dates and values to process
- */
 Btc::Btc(std::string &fileData, std::string &input)
 {
 	std::ifstream file(fileData.c_str());
@@ -47,6 +41,18 @@ Btc::Btc(std::string &fileData, std::string &input)
 	}
 	file.close();
 
+	if (dataCsv.empty())
+	{
+		std::cout << RED << "Error: " << fileData << " is empty." << RESET << std::endl;
+		return;
+	}
+
+	if (file_empty())
+	{
+		std::cout << RED << "Error: " << input << " is empty." << RESET << std::endl;
+		return;
+	}
+
 	std::ifstream fileInput(input.c_str());
 	if (!fileInput.is_open())
 	{
@@ -61,24 +67,16 @@ Btc::Btc(std::string &fileData, std::string &input)
 			continue;
 		parseInput(lineInput);
 	}
+
 	fileInput.close();
 }
 
-/**
- * @brief Copy constructor
- * @param src Source object to copy from
- */
 Btc::Btc(const Btc &src)
 {
 	if (this != &src)
 		dataCsv = src.dataCsv;
 }
 
-/**
- * @brief Assignment operator
- * @param rhs Right-hand side object to assign from
- * @return Reference to this object
- */
 Btc &Btc::operator=(const Btc &rhs)
 {
 	if (this != &rhs)
@@ -86,19 +84,12 @@ Btc &Btc::operator=(const Btc &rhs)
 	return *this;
 }
 
-/**
- * @brief Destructor
- */
 Btc::~Btc() {}
 
 /* ************************************************************************** */
 /*                              PARSING METHODS                              */
 /* ************************************************************************** */
 
-/**
- * @brief Parse a single line from input file and validate format
- * @param input Line to parse (format: "date | value")
- */
 void Btc::parseInput(std::string &input)
 {
 	std::string line = trim(input);
@@ -119,6 +110,12 @@ void Btc::parseInput(std::string &input)
 		return;
 	float value = std::atof(valueStr.c_str());
 
+	if (value < 0 || value > 1000)
+	{
+		std::cout << RED << "Error: value must be between 0 and 1000" << RESET << std::endl;
+		return;
+	}
+
 	std::cout << GREEN << date << " => " << value << " = " << value * getBitcoinPrice(date) << RESET << std::endl;
 }
 
@@ -136,11 +133,6 @@ bool Btc::isEmptyLine(const std::string &line)
 /*                            VALIDATION METHODS                             */
 /* ************************************************************************** */
 
-/**
- * @brief Validate date format (YYYY-MM-DD)
- * @param date Date string to validate
- * @return true if date format is valid, false otherwise
- */
 bool Btc::validDate(const std::string &date)
 {
 	if (date.length() != 10)
@@ -199,11 +191,6 @@ bool Btc::validValue(const std::string &value)
 	return true;
 }
 
-/**
- * @brief Check if a string contains only digits
- * @param s String to check
- * @return true if string contains only digits, false otherwise
- */
 bool Btc::isDigitStr(const std::string &s)
 {
 	int signCount = 0;
@@ -238,10 +225,6 @@ bool Btc::isLeapYear(int year)
 /*                               GETTERS                                     */
 /* ************************************************************************** */
 
-/**
- * @brief Get reference to the Bitcoin data map
- * @return Const reference to the data map
- */
 const std::map<std::string, float> &Btc::getDataCsv() const
 {
 	return dataCsv;
@@ -251,9 +234,6 @@ const std::map<std::string, float> &Btc::getDataCsv() const
 /*                             DEBUG METHODS                                 */
 /* ************************************************************************** */
 
-/**
- * @brief Print all loaded Bitcoin data for debugging purposes
- */
 void Btc::printData() const
 {
 	std::map<std::string, float>::const_iterator it = this->dataCsv.begin();
@@ -271,4 +251,27 @@ float Btc::getBitcoinPrice(const std::string &date)
 	if (it != this->dataCsv.end())
 		return it->second;
 	return -1;
+}
+
+bool Btc::fileEmpty(const std::string inputFile)
+{
+	std::ifstream fileInput(inputFile.c_str());
+	if (!fileInput.is_open())
+	{
+		std::cout << RED << "Error: Could not open input " << inputFile << RESET << std::endl;
+		return;
+	}
+
+	std::string lineInput;
+
+	while (std::getline(fileInput, lineInput))
+	{
+		if (lineInput.empty() || isEmptyLine(lineInput))
+			continue;
+		else
+			return false;
+	}
+
+	fileInput.close();
+	return true;
 }
