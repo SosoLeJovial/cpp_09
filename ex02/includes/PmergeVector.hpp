@@ -2,6 +2,7 @@
 #define PMERGEVECTOR_HPP
 
 #include <string>
+#include <sstream>
 #include <sys/time.h>
 #include <algorithm>
 #include <iostream>

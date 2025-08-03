@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/08/02 22:49:40 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/08/03 16:50:17 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,13 +93,14 @@ bool PmergeVector::isValidInt(const std::string &str) const
 			return false;
 	}
 
-	char *endptr;
-	errno = 0;
-	long val = std::strtol(str.c_str(), &endptr, 10);
-
-	return (errno != ERANGE && *endptr == '\0' &&
-			val >= std::numeric_limits<int>::min() &&
-			val <= std::numeric_limits<int>::max());
+	    std::istringstream iss(str);
+    double val;
+    
+    iss >> val;
+    
+    return iss.eof() && !iss.fail() &&
+           val >= std::numeric_limits<int>::min() && 
+           val <= std::numeric_limits<int>::max();
 }
 
 bool PmergeVector::has_duplicates(const std::vector<int> &vec)
