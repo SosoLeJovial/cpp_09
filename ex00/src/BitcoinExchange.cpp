@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 17:48:48 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/08/03 16:35:02 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/08/03 16:40:48 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,26 +266,23 @@ void BitcoinExchange::fillDate(const std::string &date, long &dateLong) {
 
 double BitcoinExchange::getBitcoinPrice(const std::string &date)
 {
-    if (_dataCsv.empty()) {
-        std::cerr << "Error: No data available" << std::endl;
+    if (_dataCsv.empty())
+    {
+        std::cout << RED << "Error: No data available" << RESET << std::endl;
         return -1;
     }
 
     std::map<std::string, double>::iterator it = _dataCsv.lower_bound(date);
     
-    if (it == _dataCsv.end()) {
+    if (it == _dataCsv.end())
         return (--it)->second;
-    }
-    
-    if (it->first == date) {
+
+    if (it->first == date) 
         return it->second;
-    }
     
-    if (it == _dataCsv.begin()) {
-        std::cerr << RED << "Error: Date " << date << " is before first available data" << RESET << std::endl;
-        return -1;
-    }
-    
+    if (it == _dataCsv.begin())
+        return 0;
+
     std::map<std::string, double>::iterator prevIt = it;
 	if (prevIt != _dataCsv.begin())
 		--prevIt;
@@ -297,8 +294,9 @@ double BitcoinExchange::getBitcoinPrice(const std::string &date)
     fillDate(it->first, postDate);
     fillDate(prevIt->first, preDate);
 
-	if (targetDate == -1 || postDate == -1 || preDate == -1) {
-		std::cerr << RED << "Error: Invalid date format" << RESET << std::endl;
+	if (targetDate == -1 || postDate == -1 || preDate == -1)
+	{
+		std::cout << RED << "Error: Invalid date format" << RESET << std::endl;
 		return -1;
 	}
     
