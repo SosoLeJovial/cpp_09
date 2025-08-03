@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 12:50:42 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/08/02 17:13:22 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/08/02 22:49:40 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ PmergeVector::PmergeVector(int ac, char **av)
 {
 	if (ac < 2)
 	{
-		std::cerr << RED << "Usage: " << av[0] << " <numbers>" << RESET << std::endl;
+		std::cout << RED << "Usage: " << av[0] << " <numbers>" << RESET << std::endl;
 		throw std::invalid_argument("Invalid number of arguments");
 	}
 	std::vector<int> all_numbers;
@@ -27,7 +27,7 @@ PmergeVector::PmergeVector(int ac, char **av)
 	{
 		if (!isValidInt(av[i]))
 		{
-			std::cerr << RED << "Error: Invalid input. Only integers are allowed." << RESET << std::endl;
+			std::cout << RED << "Error: Invalid input. Only integers are allowed." << RESET << std::endl;
 			throw std::invalid_argument("Invalid input");
 		}
 		all_numbers.push_back(std::atoi(av[i]));
@@ -136,7 +136,7 @@ void PmergeVector::sort()
 
 	if (has_duplicates(_numbers))
 	{
-		std::cerr << RED << "Error: Duplicate found." << RESET << std::endl;
+		std::cout << RED << "Error: Duplicate found." << RESET << std::endl;
 		throw std::invalid_argument("Invalid number: duplicate");
 	}
 

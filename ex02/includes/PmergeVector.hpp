@@ -10,7 +10,6 @@
 #include <vector>
 #include <stdexcept>
 #include <limits>
-#include <cerrno>
 #include "utils.hpp"
 
 enum type

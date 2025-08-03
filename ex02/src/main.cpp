@@ -6,7 +6,7 @@
 /*   By: tsofien- <tsofien-@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 09:58:51 by tsofien-          #+#    #+#             */
-/*   Updated: 2025/07/30 14:27:39 by tsofien-         ###   ########.fr       */
+/*   Updated: 2025/08/02 22:49:05 by tsofien-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int main(int ac, char **av)
 {
 	if (ac <= 1)
 	{
-		std::cerr << RED << "Usage: " << av[0] << RESET << std::endl;
+		std::cout << RED << "Usage: " << av[0] << RESET << std::endl;
 		return 1;
 	}
 
@@ -32,20 +32,20 @@ int main(int ac, char **av)
 		// 	std::cout << GREEN << "The numbers are sorted correctly." << RESET << std::endl;
 		// else
 		// {
-		// 	std::cerr << RED << "Error: The numbers are not sorted correctly." << RESET << std::endl;
+		// 	std::cout << RED << "Error: The numbers are not sorted correctly." << RESET << std::endl;
 		// 	return 1;
 		// }
 		// if (numbers.size() == static_cast<size_t>(ac - 1))
 		// std::cout << GREEN << "size expect: " << ac - 1 << " but got: " << numbers.size() << RESET << std::endl;
 		// else
 		// {
-		// 	std::cerr << RED << "size expect: " << ac - 1 << " but got: " << numbers.size() << RESET << std::endl;
+		// 	std::cout << RED << "size expect: " << ac - 1 << " but got: " << numbers.size() << RESET << std::endl;
 		// 	return 1;
 		// }
 	}
 	catch (const std::exception &e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 	}
 
 	try
@@ -53,19 +53,19 @@ int main(int ac, char **av)
 		std::cout << YELLOW << "=== SORTING WITH DEQUE ===" << RESET << std::endl;
 		PmergeDeque pmerge_deque(ac, av);
 		pmerge_deque.sort();
-		std::deque<int> deque_numbers = pmerge_deque.getNumbers(); 
+		std::deque<int> deque_numbers = pmerge_deque.getNumbers();
 		// if (pmerge_deque.is_sort(deque_numbers))
 		// 	std::cout << GREEN << "The numbers are sorted correctly." << RESET << std::endl;
 		// else
 		// {
-		// 	std::cerr << RED << "Error: The numbers are not sorted correctly." << RESET << std::endl;
+		// 	std::cout << RED << "Error: The numbers are not sorted correctly." << RESET << std::endl;
 		// 	return 1;
 		// }
 		// if (deque_numbers.size() == static_cast<size_t>(ac - 1))
 		// std::cout << GREEN << "size expect: " << ac - 1 << " but got: " << deque_numbers.size() << RESET << std::endl;
 		// else
 		// {
-		// 	std::cerr << RED << "size expect: " << ac - 1 << " but got: " << deque_numbers.size() << RESET << std::endl;
+		// 	std::cout << RED << "size expect: " << ac - 1 << " but got: " << deque_numbers.size() << RESET << std::endl;
 		// 	return 1;
 		// }
 
@@ -73,7 +73,7 @@ int main(int ac, char **av)
 	}
 	catch (const std::exception &e)
 	{
-		std::cerr << e.what() << '\n';
+		std::cout << e.what() << '\n';
 	}
 	return 0;
 }
